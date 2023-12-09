@@ -1,0 +1,10 @@
+[ 
+    {
+        "command": "/start", 
+        "description": "Запуск"
+    },
+    {
+        "command": "/stop", 
+        "description": "Остоновить"
+    }
+]
