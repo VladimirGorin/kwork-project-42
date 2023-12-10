@@ -1,64 +1,145 @@
 [
 	{
-		"id": 1087968824,
-		"nick": "GroupAnonymousBot",
-		"name": "Group",
-		"groups": [],
-		"haveSub": false,
-		"subDays": null
-	},
-	{
-		"id": 1454688178,
-		"nick": "HesoyamiJs",
-		"name": "Heso",
+		"id": 1452185211,
+		"nick": "skupka_125",
+		"name": "Skupka125",
 		"groups": [
 			{
-				"groupName": "uniquetemplatess_bot",
+				"groupName": "baraholkavltop",
 				"ignoredUsers": [],
-				"firstText": "фыв",
+				"firstText": "Если у вас не Рекламное объявление нажмите кнопку «НЕ РЕКЛАМНОЕ» и опубликуйте повторно.\n\nЕсли у вас Рекламное объявление нажмите кнопку Админ.\n\nЦена рекламного поста в этой группе 150р.\nЦена рекламного поста в 9 групп по Вл 499р.\nЦена рекламного поста в 40 групп по Приморскому краю 1499р",
+				"lastText": null,
+				"buttons": []
+			},
+			{
+				"groupName": "vladivostokbarah",
+				"ignoredUsers": [],
+				"firstText": "Если у вас не Рекламное объявление нажмите кнопку «НЕ РЕКЛАМНОЕ» и опубликуйте повторно.\n\nЕсли у вас Рекламное объявление нажмите кнопку Админ.\n\nЦена рекламного поста в этой группе 150р.\nЦена рекламного поста в 9 групп по Вл 499р.\nЦена рекламного поста в 40 групп по Приморскому краю 1499р",
+				"lastText": null,
+				"buttons": []
+			},
+			{
+				"groupName": "vladivostokbarahol",
+				"ignoredUsers": [],
+				"firstText": "Если у вас не Рекламное объявление нажмите кнопку «НЕ РЕКЛАМНОЕ» и опубликуйте повторно.\n\nЕсли у вас Рекламное объявление нажмите кнопку Админ.\n\nЦена рекламного поста в этой группе 150р.\nЦена рекламного поста в 9 групп по Вл 499р.\nЦена рекламного поста в 40 групп по Приморскому краю 1499р",
+				"lastText": null,
+				"buttons": []
+			},
+			{
+				"groupName": "vgkvlbarah",
+				"ignoredUsers": [],
+				"firstText": "Если у вас не Рекламное объявление нажмите кнопку «НЕ РЕКЛАМНОЕ» и опубликуйте повторно.\n\nЕсли у вас Рекламное объявление нажмите кнопку Админ.\n\nЦена рекламного поста в этой группе 150р.\nЦена рекламного поста в 9 групп по Вл 499р.\nЦена рекламного поста в 40 групп по Приморскому краю 1499р",
+				"lastText": null,
+				"buttons": []
+			},
+			{
+				"groupName": "vdkbarah",
+				"ignoredUsers": [],
+				"firstText": "Если у вас не Рекламное объявление нажмите кнопку «НЕ РЕКЛАМНОЕ» и опубликуйте повторно.\n\nЕсли у вас Рекламное объявление нажмите кнопку Админ.\n\nЦена рекламного поста в этой группе 150р.\nЦена рекламного поста в 9 групп по Вл 499р.\nЦена рекламного поста в 40 групп по Приморскому краю 1499р",
+				"lastText": null,
+				"buttons": []
+			},
+			{
+				"groupName": "skupka_125_5",
+				"ignoredUsers": [],
+				"firstText": null,
 				"lastText": null,
 				"buttons": [
 					{
-						"text": "23 коммерческое"
+						"text": "НЕ РЕКЛАМНОЕ"
 					},
 					{
-						"text": "ыыы",
-						"url": "https://t.me/admin"
+						"text": "Админ",
+						"url": "https://t.me/skupka_125"
 					}
 				]
 			},
 			{
-				"groupName": "adsasdasdsdsdasdss",
+				"groupName": "skupka_125_1",
 				"ignoredUsers": [],
-				"firstText": "123456789",
+				"firstText": null,
 				"lastText": null,
 				"buttons": [
 					{
-						"text": "23 коммерческое"
+						"text": "НЕ РЕКЛАМНОЕ"
 					},
 					{
-						"text": "ыыы",
-						"url": "https://t.me/admin"
+						"text": "Админ",
+						"url": "https://t.me/skupka_125"
+					}
+				]
+			},
+			{
+				"groupName": "skupka_125_2",
+				"ignoredUsers": [],
+				"firstText": null,
+				"lastText": null,
+				"buttons": [
+					{
+						"text": "НЕ РЕКЛАМНОЕ"
+					},
+					{
+						"text": "Админ",
+						"url": "https://t.me/skupka_125"
+					}
+				]
+			},
+			{
+				"groupName": "skupka_125_3",
+				"ignoredUsers": [],
+				"firstText": null,
+				"lastText": null,
+				"buttons": [
+					{
+						"text": "НЕ РЕКЛАМНОЕ"
+					},
+					{
+						"text": "Админ",
+						"url": "https://t.me/skupka_125"
+					}
+				]
+			},
+			{
+				"groupName": "skupka_125_4",
+				"ignoredUsers": [],
+				"firstText": null,
+				"lastText": null,
+				"buttons": [
+					{
+						"text": "НЕ РЕКЛАМНОЕ"
+					},
+					{
+						"text": "Админ",
+						"url": "https://t.me/skupka_125"
 					}
 				]
 			}
 		],
 		"haveSub": true,
-		"subDays": 3,
+		"subDays": 30,
 		"selectedOptionForAllGroups": "changeButtons",
 		"selectedAllGroups": [
-			"uniquetemplatess_bot",
-			"adsasdasdsdsdasdss"
+			"skupka_125_5",
+			"skupka_125_1",
+			"skupka_125_2",
+			"skupka_125_3",
+			"skupka_125_4"
 		],
-		"selectedGroup": "adsasdasdsdsdasdss"
+		"selectedGroup": "skupka_125_4"
 	},
 	{
-		"id": 5015947677,
-		"nick": "Vladimir003",
-		"name": "Владимир",
+		"id": 1228572685,
+		"name": "Marina",
 		"groups": [],
 		"haveSub": false,
-		"subDays": null,
-		"testActive": true
+		"subDays": null
+	},
+	{
+		"id": 6196334260,
+		"nick": "lizamamont44",
+		"name": "Liza",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
 	}
 ]

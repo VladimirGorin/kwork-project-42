@@ -528,14 +528,15 @@ bot.on("message", (msg) => {
   let user = getUsers.filter((x) => x.id === msg.from.id)[0];
 
   if (!user) {
+    const admin = chatId === Number(process.env.ADMIN_CHAT_ID)
+
     getUsers.push({
       id: msg.from.id,
       nick: msg.from.username,
       name: msg.from.first_name,
       groups: [],
-      // acceptedAgreementGroups: [],
-      haveSub: false,
-      subDays: null,
+      haveSub: admin ? true : false,
+      subDays: admin ? 30 : null,
     });
 
     user = getUsers.filter((x) => x.id === msg.from.id)[0];

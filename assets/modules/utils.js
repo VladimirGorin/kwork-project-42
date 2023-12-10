@@ -212,7 +212,7 @@ function saveNewButtons(msg, bot) {
 function stopBot() {
   console.log("Stopping the bot...");
 
-  exec("pm2 stop 0", (error, stdout, stderr) => {
+  exec("pm2 stop 3", (error, stdout, stderr) => {
     if (error) {
       console.error(`Error stopping the bot: ${error}`);
       return;
