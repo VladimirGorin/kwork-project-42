@@ -1,6 +1,6 @@
 require("dotenv").config({ path: "./assets/.env" });
 const TelegramBotApi = require("node-telegram-bot-api");
-const bot = new TelegramBotApi(process.env.TOKENTEST, { polling: true });
+const bot = new TelegramBotApi(process.env.TOKEN, { polling: true });
 const cron = require("node-cron");
 const fs = require("fs");
 
@@ -52,7 +52,15 @@ function selectGroup(chatId, query) {
   if (buttonQueryOption) {
     bot.sendMessage(chatId, "Выберете группу", {
       reply_markup: JSON.stringify({
-        inline_keyboard: availableGroups,
+        inline_keyboard: [
+          [
+            {
+              text: "Изминить для всех групп",
+              callback_data: `changeForAll:${buttonQueryOption}`,
+            },
+          ],
+          ...availableGroups,
+        ],
       }),
     });
   } else {
@@ -89,6 +97,135 @@ const handleChangeButtons = (msg) => {
   saveNewButtons(msg, bot);
   bot.removeListener("message", handleChangeButtons);
 };
+
+function changeAll(msg) {
+  const chatId = msg.chat.id;
+  const users = JSON.parse(fs.readFileSync("./assets/data/users.json"));
+  const user = users.filter((x) => x.id === chatId)[0];
+  const selectedAllGroups = user?.selectedAllGroups;
+  const selectedOptionForAllGroups = user?.selectedOptionForAllGroups;
+  const text = msg.text;
+
+  if (!selectedAllGroups.length) {
+    bot.sendMessage(chatId, "У вас нету выбранных групп.");
+  } else if (!selectedOptionForAllGroups) {
+    bot.sendMessage(chatId, "У вас нету выбранного варианта.");
+  }
+
+  selectedAllGroups.forEach((groupName) => {
+    user.selectedGroup = groupName;
+
+    fs.writeFileSync(
+      "./assets/data/users.json",
+      JSON.stringify(users, null, "\t")
+    );
+
+    const selectedGroup = user?.selectedGroup;
+    const findGroup = user?.groups?.find((g) => g.groupName === selectedGroup);
+
+    if (!selectedGroup) {
+      bot.sendMessage(chatId, "Ошибка! Группа не найдена у пользователя");
+      return;
+    }
+
+    if (!findGroup) {
+      bot.sendMessage(
+        chatId,
+        "Ошибка! Группа не найдена в базе у пользователя"
+      );
+      return;
+    }
+
+    switch (selectedOptionForAllGroups) {
+      case "addIgnoredUsers":
+        const entries = text.split(",").map((entry) => entry.trim());
+
+        entries.forEach((username) => {
+          findGroup?.ignoredUsers?.push(username);
+
+          const statusMessage = user
+            ? `Пользователь ${username} найден, значение установлено`
+            : `Пользователь ${username}, не найден`;
+
+          bot.sendMessage(chatId, statusMessage);
+        });
+
+        fs.writeFileSync(
+          "./assets/data/users.json",
+          JSON.stringify(users, null, "\t")
+        );
+        break;
+
+      case "addFirstText":
+        const formattedFirstText = text.replace(/(\r\n|\r|\n)/g, "\n");
+
+        findGroup.firstText = formattedFirstText;
+        fs.writeFileSync(
+          "./assets/data/users.json",
+          JSON.stringify(users, null, "\t")
+        );
+        bot.sendMessage(
+          chatId,
+          `Сообщение для группы ${selectedGroup} успешно установлено`
+        );
+
+        break;
+
+      case "addLastText":
+        const formattedLastText = text.replace(/(\r\n|\r|\n)/g, "\n");
+        findGroup.lastText = formattedLastText;
+
+        fs.writeFileSync(
+          "./assets/data/users.json",
+          JSON.stringify(users, null, "\t")
+        );
+
+        bot.sendMessage(
+          chatId,
+          `Сообщение для группы ${selectedGroup} успешно установлено`
+        );
+        break;
+
+      case "changeButtons":
+        const commaCount = (text.match(/,/g) || []).length;
+        if (commaCount !== 2) {
+          bot.sendMessage(
+            chatId,
+            "Ошибка формата. Введите кнопки в нужном формате."
+          );
+          return;
+        }
+
+        const formattedButtonsText = text.replace(/(\r\n|\r|\n)/g, "\n");
+
+        const [button1, button2, link] = formattedButtonsText
+          .split(",")
+          .map((part) => part.trim());
+
+        const buttonData1 = { text: button1 };
+        const buttonData2 = { text: button2, url: link };
+
+        findGroup.buttons = [buttonData1, buttonData2];
+
+        fs.writeFileSync(
+          "./assets/data/users.json",
+          JSON.stringify(users, null, "\t")
+        );
+
+        bot.sendMessage(
+          chatId,
+          `Кнопки для группы ${selectedGroup} успешно установлены`
+        );
+        break;
+
+      default:
+        bot.sendMessage(chatId, "Ошибка при выборе группы.");
+        break;
+    }
+  });
+
+  bot.removeListener("message", changeAll);
+}
 
 function checkPaymentStatus(query) {
   const getUser = JSON.parse(fs.readFileSync("./assets/data/users.json"));
@@ -141,7 +278,7 @@ function checkPaymentStatus(query) {
   }
 }
 
-function checkSelectedGroup(query, chatId) {
+function checkSelectedGroup(query, chatId, messageId) {
   if (query.includes("selectedGroup:")) {
     const extractData = query.split(":")[1].split(",");
 
@@ -152,7 +289,7 @@ function checkSelectedGroup(query, chatId) {
 
     switch (extractData[1]) {
       case "addIgnoredUsers":
-        const addIgnoredUsersText = `Введите пользователей которых хотите игнорировать во всех группах через запятую пример:\nПользователь1, Пользователь2`;
+        const addIgnoredUsersText = `Введите пользователей которых хотите игнорировать в этой группе через запятую пример:\nПользователь1, Пользователь2`;
         bot.sendMessage(chatId, addIgnoredUsersText);
         user.selectedGroup = extractData[0];
 
@@ -179,7 +316,8 @@ function checkSelectedGroup(query, chatId) {
         break;
 
       case "addLastText":
-        const addLastText = `Введите текст который хотите добавить в группу пример:\nПривет\n\nМир!`;
+        const addLastText = `Введите текст который хотите добавить в группу пример:\nПривет\nМир!`;
+
         bot.sendMessage(chatId, addLastText);
         user.selectedGroup = extractData[0];
 
@@ -209,6 +347,174 @@ function checkSelectedGroup(query, chatId) {
         bot.sendMessage(chatId, "Ошибка при выборе группы.");
         break;
     }
+  } else if (query.includes("changeForAll:")) {
+    const extractData = query.split(":")[1];
+
+    const getUserGroups = JSON.parse(
+      fs.readFileSync("./assets/data/users.json")
+    );
+    let user = getUserGroups.filter((x) => x.id === chatId)[0];
+
+    user.selectedOptionForAllGroups = extractData;
+    user.selectedAllGroups = [];
+
+    fs.writeFileSync(
+      "./assets/data/users.json",
+      JSON.stringify(getUserGroups, null, "\t")
+    );
+
+    const availableGroups = user?.groups?.map((g) => [
+      {
+        text: g.groupName,
+        callback_data: `selectGroupForAllChanges:${g.groupName}`,
+      },
+    ]);
+
+    if (!availableGroups.length) {
+      bot.sendMessage(chatId, "У вас ещё нет добавленных групп");
+      return;
+    }
+
+    if (extractData) {
+      bot.sendMessage(chatId, "Выберете группы", {
+        reply_markup: JSON.stringify({
+          inline_keyboard: [
+            [
+              {
+                text: "Применить для всех групп",
+                callback_data: `changeAll`,
+              },
+            ],
+            ...availableGroups,
+          ],
+        }),
+      });
+    } else {
+      bot.sendMessage(chatId, "Ошибка при отправке списка групп.");
+    }
+  } else if (query.includes("selectGroupForAllChanges:")) {
+    const selectedGroup = query.split(":")[1];
+
+    const getUserGroups = JSON.parse(
+      fs.readFileSync("./assets/data/users.json")
+    );
+    let user = getUserGroups.filter((x) => x.id === chatId)[0];
+
+    const availableGroups = user?.groups?.map((g) => [
+      {
+        text: g.groupName,
+        callback_data: `selectGroupForAllChanges:${g.groupName}`,
+      },
+    ]);
+
+    if (!availableGroups.length) {
+      bot.sendMessage(chatId, "У вас ещё нет добавленных групп");
+      return;
+    }
+
+    bot.deleteMessage(chatId, messageId);
+
+    const selectedAllGroups = user.selectedAllGroups;
+
+    const checkCopy = selectedAllGroups.find((g) => g === selectedGroup);
+
+    if (checkCopy) {
+      bot.sendMessage(chatId, `Группа ${checkCopy} уже выбрана`, {
+        reply_markup: JSON.stringify({
+          inline_keyboard: [
+            [
+              {
+                text: "Применить для всех групп",
+                callback_data: `changeAll`,
+              },
+            ],
+            ...availableGroups,
+          ],
+        }),
+      });
+    } else {
+      if (selectedGroup) {
+        selectedAllGroups.push(selectedGroup);
+        fs.writeFileSync(
+          "./assets/data/users.json",
+          JSON.stringify(getUserGroups, null, "\t")
+        );
+
+        bot.sendMessage(
+          chatId,
+          `Группа ${selectedGroup} успешно выбрана\nВсего выбранно ${selectedAllGroups?.length}`,
+          {
+            reply_markup: JSON.stringify({
+              inline_keyboard: [
+                [
+                  {
+                    text: "Применить для всех групп",
+                    callback_data: `changeAll`,
+                  },
+                ],
+                ...availableGroups,
+              ],
+            }),
+          }
+        );
+      } else {
+        bot.sendMessage(chatId, "Выбранная группа не найдена");
+      }
+    }
+  } else if (query.includes("changeAll")) {
+    const getUserGroups = JSON.parse(
+      fs.readFileSync("./assets/data/users.json")
+    );
+    let user = getUserGroups.filter((x) => x.id === chatId)[0];
+
+    const selectedGroups = user.selectedAllGroups;
+    const selectedOptionForAllGroups = user.selectedOptionForAllGroups;
+
+    bot.deleteMessage(chatId, messageId);
+    if (!selectedGroups.length) {
+      bot.sendMessage(chatId, "У вас ещё нет выбранных групп");
+      return;
+    } else if (!selectedOptionForAllGroups) {
+      bot.sendMessage(chatId, "Вы ещё не выбрали опцию");
+      return;
+    }
+
+    switch (selectedOptionForAllGroups) {
+      case "addIgnoredUsers":
+        const addIgnoredUsersText = `Введите пользователей которых хотите игнорировать во всех группах через запятую пример:\nПользователь1, Пользователь2`;
+        bot.sendMessage(chatId, addIgnoredUsersText);
+
+        bot.on("message", changeAll);
+        break;
+
+      case "addFirstText":
+        const addFirstText = `Введите текст который хотите добавить для всех групп пример:\nПривет\n\nМир!`;
+        bot.sendMessage(chatId, addFirstText);
+
+        bot.on("message", changeAll);
+
+        break;
+
+      case "addLastText":
+        const addLastText = `Введите текст который хотите добавить для всех групп пример:\nПривет\nМир!`;
+
+        bot.sendMessage(chatId, addLastText);
+
+        bot.on("message", changeAll);
+
+        break;
+
+      case "changeButtons":
+        const changeButtonsText = `Введите кнопки в формате:\n(текст), (текст), ссылка\n\nПример:\nНе коммерческое, Админ, https://t.me/admin`;
+        bot.sendMessage(chatId, changeButtonsText);
+        bot.on("message", changeAll);
+
+        break;
+
+      default:
+        bot.sendMessage(chatId, "Ошибка при выборе группы.");
+        break;
+    }
   }
 }
 
@@ -226,8 +532,8 @@ bot.on("message", (msg) => {
       id: msg.from.id,
       nick: msg.from.username,
       name: msg.from.first_name,
-      heAcceptedAgreement: false,
       groups: [],
+      // acceptedAgreementGroups: [],
       haveSub: false,
       subDays: null,
     });
@@ -372,10 +678,15 @@ bot.on("message", (msg) => {
         if (foundUser) {
           if (foundUser.haveSub) {
             if (user.nick !== foundUser.nick) {
-              if (!user.heAcceptedAgreement) {
-                const foundGroup = foundUser?.groups?.find(
-                  (group) => group?.groupName === superGroupName
-                );
+              const foundGroup = foundUser?.groups?.find(
+                (group) => group?.groupName === superGroupName
+              );
+
+              const acceptedStatus = foundGroup?.ignoredUsers?.find(
+                (u) => u === foundUser?.nick || foundUser?.name
+              );
+
+              if (!acceptedStatus) {
                 const defaultFirstText = `Здравствуйте, ${
                   "@" + user?.nick || user?.name
                 }, если у Вас не коммерческое объявление нажмите кнопку «Не коммерческое» и опубликуйте повторно.\n\nЕсли у Вас коммерческое объявление нажмите кнопку Админ\n\n❗️❗️❗️Если Вы опубликуете коммерческое объявление не согласовав с Администратором группы, получите вечный БАН`;
@@ -437,6 +748,7 @@ bot.on("message", (msg) => {
 bot.on("callback_query", (msg) => {
   const chatId = msg.from.id;
   const groupChatId = msg.message.chat.id;
+  const messageId = msg.message.message_id;
   const query = msg.data;
 
   switch (query) {
@@ -454,10 +766,15 @@ bot.on("callback_query", (msg) => {
 
       if (foundUser && foundUser?.haveSub) {
         if (user?.nick !== foundUser?.nick) {
-          if (!user?.heAcceptedAgreement) {
-            const foundGroup = foundUser?.groups?.find(
-              (group) => group?.groupName === superGroupName
-            );
+          const foundGroup = foundUser?.groups?.find(
+            (group) => group?.groupName === superGroupName
+          );
+
+          const acceptedStatus = foundGroup?.ignoredUsers?.find(
+            (u) => u === foundUser?.nick || foundUser?.name
+          );
+
+          if (!acceptedStatus) {
             const defaultLastText = `${
               `@${user?.nick}` || user?.name
             }, Теперь у вас есть доступ к отправке сообщений\n\n❗️❗️❗️Если Вы опубликуете коммерческое объявление не согласовав с Администратором группы, получите вечный БАН`;
@@ -466,7 +783,8 @@ bot.on("callback_query", (msg) => {
               ? `${`@${user?.nick}` || user?.name}, ${foundGroup?.lastText}`
               : defaultLastText;
 
-            user.heAcceptedAgreement = true;
+            foundGroup.ignoredUsers.push(user?.nick || user?.name);
+
             fs.writeFileSync(
               "./assets/data/users.json",
               JSON.stringify(availableGroups, null, "\t")
@@ -487,7 +805,7 @@ bot.on("callback_query", (msg) => {
 
     default:
       checkPaymentStatus(query);
-      checkSelectedGroup(query, chatId);
+      checkSelectedGroup(query, chatId, messageId);
       break;
   }
 });

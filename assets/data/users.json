@@ -3,7 +3,6 @@
 		"id": 1087968824,
 		"nick": "GroupAnonymousBot",
 		"name": "Group",
-		"heAcceptedAgreement": false,
 		"groups": [],
 		"haveSub": false,
 		"subDays": null
@@ -12,40 +11,51 @@
 		"id": 1454688178,
 		"nick": "HesoyamiJs",
 		"name": "Heso",
-		"heAcceptedAgreement": false,
 		"groups": [
 			{
 				"groupName": "uniquetemplatess_bot",
 				"ignoredUsers": [],
-				"firstText": "fasdasdads\n\nsadasasds",
-				"lastText": "231234144\n\n123132",
+				"firstText": "фыв",
+				"lastText": null,
 				"buttons": [
 					{
-						"text": "ssе коsssssммерческое"
+						"text": "23 коммерческое"
 					},
 					{
-						"text": "sssдмин",
-						"url": "https://t.me/asdmin"
+						"text": "ыыы",
+						"url": "https://t.me/admin"
 					}
 				]
 			},
 			{
-				"groupName": "uniqsuetemplatess_bot",
+				"groupName": "adsasdasdsdsdasdss",
 				"ignoredUsers": [],
-				"firstText": null,
+				"firstText": "123456789",
 				"lastText": null,
-				"buttons": []
+				"buttons": [
+					{
+						"text": "23 коммерческое"
+					},
+					{
+						"text": "ыыы",
+						"url": "https://t.me/admin"
+					}
+				]
 			}
 		],
 		"haveSub": true,
 		"subDays": 3,
-		"selectedGroup": "uniquetemplatess_bot"
+		"selectedOptionForAllGroups": "changeButtons",
+		"selectedAllGroups": [
+			"uniquetemplatess_bot",
+			"adsasdasdsdsdasdss"
+		],
+		"selectedGroup": "adsasdasdsdsdasdss"
 	},
 	{
 		"id": 5015947677,
 		"nick": "Vladimir003",
 		"name": "Владимир",
-		"heAcceptedAgreement": true,
 		"groups": [],
 		"haveSub": false,
 		"subDays": null,

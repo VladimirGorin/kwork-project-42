@@ -12,14 +12,18 @@ const saveGroups = (msg, bot) => {
   };
 
   const links = messageText.match(/https:\/\/t.me\/([^\s,]+)/g) || [];
-  const groupNamesFromLinks = links.map((link) => extractGroupNameFromLink(link));
+  const groupNamesFromLinks = links.map((link) =>
+    extractGroupNameFromLink(link)
+  );
 
   const groupNamesFromText = messageText
-    .replace(/https:\/\/t.me\/([^\s,]+)/g, '')
+    .replace(/https:\/\/t.me\/([^\s,]+)/g, "")
     .split(",")
     .map((groupName) => groupName.trim());
 
-  const groupNames = [...groupNamesFromLinks, ...groupNamesFromText].filter(Boolean);
+  const groupNames = [...groupNamesFromLinks, ...groupNamesFromText].filter(
+    Boolean
+  );
 
   groupNames.forEach((groupName) => {
     const user = users.find((x) => x.id === chatId);
@@ -127,7 +131,10 @@ function saveNewGroupFirstText(msg, bot) {
     JSON.stringify(usersData, null, "\t")
   );
 
-  bot.sendMessage(chatId, `Сообщение для группы успешно установлено`);
+  bot.sendMessage(
+    chatId,
+    `Сообщение для группы ${selectedGroup} успешно установлено`
+  );
 }
 
 function saveNewGroupLastText(msg, bot) {
@@ -156,7 +163,7 @@ function saveNewGroupLastText(msg, bot) {
     JSON.stringify(usersData, null, "\t")
   );
 
-  bot.sendMessage(chatId, `Сообщение для группы успешно установлено`);
+  bot.sendMessage(chatId, `Сообщение для группы ${selectedGroup} успешно установлено`);
 }
 
 function saveNewButtons(msg, bot) {
@@ -193,7 +200,6 @@ function saveNewButtons(msg, bot) {
   const buttonData2 = { text: button2, url: link };
 
   findGroup.buttons = [buttonData1, buttonData2];
-
 
   fs.writeFileSync(
     "./assets/data/users.json",
