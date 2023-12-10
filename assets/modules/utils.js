@@ -1,14 +1,25 @@
 const fs = require("fs");
 const { exec } = require("child_process");
 
-function saveGroups(msg, bot) {
+const saveGroups = (msg, bot) => {
   const chatId = msg.chat.id;
   const users = JSON.parse(fs.readFileSync("./assets/data/users.json"));
   const messageText = msg.text;
 
-  const groupNames = messageText
+  const extractGroupNameFromLink = (link) => {
+    const match = link.match(/https:\/\/t.me\/([^\s,]+)/);
+    return match ? match[1] : null;
+  };
+
+  const links = messageText.match(/https:\/\/t.me\/([^\s,]+)/g) || [];
+  const groupNamesFromLinks = links.map((link) => extractGroupNameFromLink(link));
+
+  const groupNamesFromText = messageText
+    .replace(/https:\/\/t.me\/([^\s,]+)/g, '')
     .split(",")
     .map((groupName) => groupName.trim());
+
+  const groupNames = [...groupNamesFromLinks, ...groupNamesFromText].filter(Boolean);
 
   groupNames.forEach((groupName) => {
     const user = users.find((x) => x.id === chatId);
@@ -54,8 +65,7 @@ function saveGroups(msg, bot) {
       );
     }
   });
-}
-
+};
 function saveIgnoredUsers(msg, bot) {
   const chatId = msg.chat.id;
   const usersData = JSON.parse(fs.readFileSync("./assets/data/users.json"));

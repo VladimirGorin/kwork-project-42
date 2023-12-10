@@ -1,10 +1,8 @@
 require("dotenv").config({ path: "./assets/.env" });
 const TelegramBotApi = require("node-telegram-bot-api");
-const bot = new TelegramBotApi(process.env.TOKEN, { polling: true });
-const cron = require('node-cron');
+const bot = new TelegramBotApi(process.env.TOKENTEST, { polling: true });
+const cron = require("node-cron");
 const fs = require("fs");
-
-const users = require("./assets/data/users.json");
 
 const {
   saveIgnoredUsers,
@@ -21,8 +19,8 @@ bot.setMyCommands(commands);
 
 function selectGroup(chatId, query) {
   let buttonQueryOption = null;
-  const users = JSON.parse(fs.readFileSync("./assets/data/users.json"));
-  var user = users.filter((x) => x.id === chatId)[0];
+  const getUserGroups = JSON.parse(fs.readFileSync("./assets/data/users.json"));
+  let user = getUserGroups.filter((x) => x.id === chatId)[0];
 
   switch (query) {
     case "Добавить людей в игнор":
@@ -46,8 +44,9 @@ function selectGroup(chatId, query) {
     },
   ]);
 
-  if (!availableGroups) {
+  if (!availableGroups.length) {
     bot.sendMessage(chatId, "У вас ещё нет добавленных групп");
+    return;
   }
 
   if (buttonQueryOption) {
@@ -92,10 +91,12 @@ const handleChangeButtons = (msg) => {
 };
 
 function checkPaymentStatus(query) {
+  const getUser = JSON.parse(fs.readFileSync("./assets/data/users.json"));
+
   if (query.includes("cancelPaymentId:")) {
     const paymentId = query.split(":")[1];
 
-    const userWithPaymentId = users.find((x) => x.id === Number(paymentId));
+    const userWithPaymentId = getUser.find((x) => x.id === Number(paymentId));
 
     if (userWithPaymentId) {
       userWithPaymentId.haveSub = false;
@@ -103,7 +104,7 @@ function checkPaymentStatus(query) {
 
       fs.writeFileSync(
         "./assets/data/users.json",
-        JSON.stringify(users, null, "\t")
+        JSON.stringify(getUser, null, "\t")
       );
 
       bot.sendMessage(userWithPaymentId.id, `Подписка отклонена!`);
@@ -116,7 +117,7 @@ function checkPaymentStatus(query) {
   } else if (query.includes("confirmPaymentId:")) {
     const paymentId = query.split(":")[1];
 
-    const userWithPaymentId = users.find((x) => x.id === Number(paymentId));
+    const userWithPaymentId = getUser.find((x) => x.id === Number(paymentId));
 
     if (userWithPaymentId) {
       userWithPaymentId.haveSub = true;
@@ -124,7 +125,7 @@ function checkPaymentStatus(query) {
 
       fs.writeFileSync(
         "./assets/data/users.json",
-        JSON.stringify(users, null, "\t")
+        JSON.stringify(getUser, null, "\t")
       );
 
       bot.sendMessage(
@@ -144,8 +145,10 @@ function checkSelectedGroup(query, chatId) {
   if (query.includes("selectedGroup:")) {
     const extractData = query.split(":")[1].split(",");
 
-    const users = JSON.parse(fs.readFileSync("./assets/data/users.json"));
-    var user = users.filter((x) => x.id === chatId)[0];
+    const getUserGroups = JSON.parse(
+      fs.readFileSync("./assets/data/users.json")
+    );
+    let user = getUserGroups.filter((x) => x.id === chatId)[0];
 
     switch (extractData[1]) {
       case "addIgnoredUsers":
@@ -155,7 +158,7 @@ function checkSelectedGroup(query, chatId) {
 
         fs.writeFileSync(
           "./assets/data/users.json",
-          JSON.stringify(users, null, "\t")
+          JSON.stringify(getUserGroups, null, "\t")
         );
 
         bot.on("message", handleAddIgnoredUsers);
@@ -168,7 +171,7 @@ function checkSelectedGroup(query, chatId) {
 
         fs.writeFileSync(
           "./assets/data/users.json",
-          JSON.stringify(users, null, "\t")
+          JSON.stringify(getUserGroups, null, "\t")
         );
 
         bot.on("message", handleAddFirstText);
@@ -182,7 +185,7 @@ function checkSelectedGroup(query, chatId) {
 
         fs.writeFileSync(
           "./assets/data/users.json",
-          JSON.stringify(users, null, "\t")
+          JSON.stringify(getUserGroups, null, "\t")
         );
 
         bot.on("message", handleAddLastText);
@@ -196,7 +199,7 @@ function checkSelectedGroup(query, chatId) {
 
         fs.writeFileSync(
           "./assets/data/users.json",
-          JSON.stringify(users, null, "\t")
+          JSON.stringify(getUserGroups, null, "\t")
         );
 
         bot.on("message", handleChangeButtons);
@@ -214,11 +217,12 @@ bot.on("message", (msg) => {
   const chatId = msg.chat.id;
   const { type } = msg.chat;
   const { message_id } = msg;
+  const getUsers = JSON.parse(fs.readFileSync("./assets/data/users.json"));
 
-  var user = users.filter((x) => x.id === msg.from.id)[0];
+  let user = getUsers.filter((x) => x.id === msg.from.id)[0];
 
   if (!user) {
-    users.push({
+    getUsers.push({
       id: msg.from.id,
       nick: msg.from.username,
       name: msg.from.first_name,
@@ -228,10 +232,10 @@ bot.on("message", (msg) => {
       subDays: null,
     });
 
-    user = users.filter((x) => x.id === msg.from.id)[0];
+    user = getUsers.filter((x) => x.id === msg.from.id)[0];
     fs.writeFileSync(
       "./assets/data/users.json",
-      JSON.stringify(users, null, "\t")
+      JSON.stringify(getUsers, null, "\t")
     );
   }
 
@@ -278,16 +282,22 @@ bot.on("message", (msg) => {
       break;
 
     case "Тестовый режим (3) дня":
-      user.haveSub = true;
-      user.subDays = 3;
+      if (user?.testActive) {
+        const testSubModeText = `@${user?.nick}, Вы ранее уже активировали трех дневный тестовый режим`;
+        bot.sendMessage(chatId, testSubModeText);
+      } else {
+        user.haveSub = true;
+        user.testActive = true;
+        user.subDays = 3;
 
-      fs.writeFileSync(
-        "./assets/data/users.json",
-        JSON.stringify(users, null, "\t")
-      );
+        fs.writeFileSync(
+          "./assets/data/users.json",
+          JSON.stringify(getUsers, null, "\t")
+        );
 
-      const testSubModeText = `@${user?.nick}, Мы активировали трех дневный тестовый режим`;
-      bot.sendMessage(chatId, testSubModeText);
+        const testSubModeText = `@${user?.nick}, Мы активировали трех дневный тестовый режим. Что бы продолжить нажмите /start`;
+        bot.sendMessage(chatId, testSubModeText);
+      }
       break;
 
     case "Купить доступ":
@@ -369,9 +379,12 @@ bot.on("message", (msg) => {
                 const defaultFirstText = `Здравствуйте, ${
                   "@" + user?.nick || user?.name
                 }, если у Вас не коммерческое объявление нажмите кнопку «Не коммерческое» и опубликуйте повторно.\n\nЕсли у Вас коммерческое объявление нажмите кнопку Админ\n\n❗️❗️❗️Если Вы опубликуете коммерческое объявление не согласовав с Администратором группы, получите вечный БАН`;
-                const firstGroupText =
-                  `Здравствуйте, ${"@" + user?.nick || user?.name}, ` +
-                    foundGroup?.firstText || defaultFirstText;
+
+                const firstGroupText = foundGroup?.firstText
+                  ? `Здравствуйте, ${"@" + user?.nick || user?.name}, ${
+                      foundGroup?.firstText
+                    }`
+                  : defaultFirstText;
 
                 const groupAdminButtonURL = foundGroup?.buttons?.[1]?.url;
                 const groupAdminButtonText = foundGroup?.buttons?.[1]?.text;
@@ -425,7 +438,6 @@ bot.on("callback_query", (msg) => {
   const chatId = msg.from.id;
   const groupChatId = msg.message.chat.id;
   const query = msg.data;
-  const user = users.filter((x) => x.id === chatId)[0];
 
   switch (query) {
     case "nonProfit":
@@ -433,6 +445,8 @@ bot.on("callback_query", (msg) => {
       const availableGroups = JSON.parse(
         fs.readFileSync("./assets/data/users.json")
       );
+
+      const user = availableGroups.filter((x) => x.id === chatId)[0];
 
       const foundUser = availableGroups.find((user) =>
         user?.groups?.some((group) => superGroupName === group?.groupName)
@@ -447,9 +461,10 @@ bot.on("callback_query", (msg) => {
             const defaultLastText = `${
               `@${user?.nick}` || user?.name
             }, Теперь у вас есть доступ к отправке сообщений\n\n❗️❗️❗️Если Вы опубликуете коммерческое объявление не согласовав с Администратором группы, получите вечный БАН`;
-            const lastGroupText =
-              `${`@${user?.nick}` || user?.name}, ${foundGroup?.lastText}` ||
-              defaultLastText;
+
+            const lastGroupText = foundGroup?.lastText
+              ? `${`@${user?.nick}` || user?.name}, ${foundGroup?.lastText}`
+              : defaultLastText;
 
             user.heAcceptedAgreement = true;
             fs.writeFileSync(
