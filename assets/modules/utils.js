@@ -212,7 +212,20 @@ function saveNewButtons(msg, bot) {
 function stopBot() {
   console.log("Stopping the bot...");
 
-  exec("pm2 stop 3", (error, stdout, stderr) => {
+  exec("pm2 stop grootPersonal", (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error stopping the bot: ${error}`);
+      return;
+    }
+
+    console.log("Bot stopped successfully.", stdout);
+  });
+}
+
+function restartBot() {
+  console.log("Restart the bot...");
+
+  exec("pm2 restart grootPersonal", (error, stdout, stderr) => {
     if (error) {
       console.error(`Error stopping the bot: ${error}`);
       return;
@@ -337,4 +350,5 @@ module.exports = {
   saveReceipt,
   stopBot,
   saveGroups,
+  restartBot
 };

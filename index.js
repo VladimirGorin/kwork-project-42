@@ -12,6 +12,7 @@ const {
   saveGroups,
   stopBot,
   saveNewButtons,
+  restartBot,
 } = require("./assets/modules/utils");
 const commands = JSON.parse(fs.readFileSync("./assets/data/commands.json"));
 
@@ -577,6 +578,15 @@ bot.on("message", (msg) => {
     case "/stop":
       if (user?.id === Number(process.env.ADMIN_CHAT_ID)) {
         stopBot();
+      } else {
+        bot.sendMessage(chatId, "Вы не админ");
+      }
+
+      break;
+
+    case "/restart":
+      if (user?.id === Number(process.env.ADMIN_CHAT_ID)) {
+        restartBot();
       } else {
         bot.sendMessage(chatId, "Вы не админ");
       }
