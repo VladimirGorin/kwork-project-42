@@ -181,5 +181,35 @@
 		"groups": [],
 		"haveSub": false,
 		"subDays": null
+	},
+	{
+		"id": 1454688178,
+		"nick": "HesoyamiJs",
+		"name": "Heso",
+		"groups": [
+			{
+				"groupName": "dasdsdsdsds",
+				"ignoredUsers": [],
+				"firstText": "asd",
+				"lastText": null,
+				"buttons": []
+			},
+			{
+				"groupName": "dasdsdadas",
+				"ignoredUsers": [],
+				"firstText": null,
+				"lastText": null,
+				"buttons": []
+			}
+		],
+		"haveSub": true,
+		"subDays": 3,
+		"testActive": true,
+		"selectedGroup": "dasdsdsdsds",
+		"selectedOptionForAllGroups": "addFirstText",
+		"selectedAllGroups": [
+			"dasdsdsdsds",
+			"dasdsdadas"
+		]
 	}
 ]

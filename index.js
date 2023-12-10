@@ -1,6 +1,6 @@
 require("dotenv").config({ path: "./assets/.env" });
 const TelegramBotApi = require("node-telegram-bot-api");
-const bot = new TelegramBotApi(process.env.TOKEN, { polling: true });
+const bot = new TelegramBotApi(process.env.TOKENTEST, { polling: true });
 const cron = require("node-cron");
 const fs = require("fs");
 
@@ -403,10 +403,11 @@ function checkSelectedGroup(query, chatId, messageId) {
 
     const availableGroups = user?.groups?.map((g) => [
       {
-        text: g.groupName,
+        text: user.selectedAllGroups.includes(g.groupName) ? `${g.groupName} ✅` : g.groupName,
         callback_data: `selectGroupForAllChanges:${g.groupName}`,
       },
     ]);
+
 
     if (!availableGroups.length) {
       bot.sendMessage(chatId, "У вас ещё нет добавленных групп");
@@ -420,6 +421,13 @@ function checkSelectedGroup(query, chatId, messageId) {
     const checkCopy = selectedAllGroups.find((g) => g === selectedGroup);
 
     if (checkCopy) {
+      const newAvailableGroups = user?.groups?.map((g) => [
+        {
+          text: user.selectedAllGroups.includes(g.groupName) ? `${g.groupName} ✅` : g.groupName,
+          callback_data: `selectGroupForAllChanges:${g.groupName}`,
+        },
+      ]);
+
       bot.sendMessage(chatId, `Группа ${checkCopy} уже выбрана`, {
         reply_markup: JSON.stringify({
           inline_keyboard: [
@@ -429,7 +437,7 @@ function checkSelectedGroup(query, chatId, messageId) {
                 callback_data: `changeAll`,
               },
             ],
-            ...availableGroups,
+            ...newAvailableGroups,
           ],
         }),
       });
@@ -440,7 +448,14 @@ function checkSelectedGroup(query, chatId, messageId) {
           "./assets/data/users.json",
           JSON.stringify(getUserGroups, null, "\t")
         );
-
+        
+        const newAvailableGroups = user?.groups?.map((g) => [
+          {
+            text: user.selectedAllGroups.includes(g.groupName) ? `${g.groupName} ✅` : g.groupName,
+            callback_data: `selectGroupForAllChanges:${g.groupName}`,
+          },
+        ]);
+    
         bot.sendMessage(
           chatId,
           `Группа ${selectedGroup} успешно выбрана\nВсего выбранно ${selectedAllGroups?.length}`,
@@ -453,7 +468,7 @@ function checkSelectedGroup(query, chatId, messageId) {
                     callback_data: `changeAll`,
                   },
                 ],
-                ...availableGroups,
+                ...newAvailableGroups,
               ],
             }),
           }
