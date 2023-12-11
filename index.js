@@ -46,32 +46,43 @@ function selectGroup(chatId, query) {
       break;
   }
 
-  const availableGroups = user?.groups?.map((g) => [
-    {
-      text: g.groupName,
-      callback_data: `selectedGroup:${g.groupName},${buttonQueryOption}`,
-    },
-  ]);
-
+  const availableGroups = user?.groups?.map((g) => {
+    if (g.groupName.length >= 20) {
+      bot.sendMessage(chatId, `Группа "${g.groupName}" содержит более 20 символов. Она была удалена из списка ваших групп`);
+      user.groups = user.groups.filter((group) => group.groupName !== g.groupName);
+      fs.writeFileSync("./assets/data/users.json", JSON.stringify(getUserGroups, null, 2));
+      return null;
+    }
+    return [
+      {
+        text: g.groupName,
+        callback_data: `selectedGroup:${g.groupName},${buttonQueryOption}`,
+      },
+    ];
+  }).filter(Boolean);
   if (!availableGroups.length) {
     bot.sendMessage(chatId, "У вас ещё нет добавленных групп");
     return;
   }
 
   if (buttonQueryOption) {
-    bot.sendMessage(chatId, "Выберете группу", {
-      reply_markup: JSON.stringify({
-        inline_keyboard: [
-          [
-            {
-              text: "Изминить для всех групп",
-              callback_data: `changeForAll:${buttonQueryOption}`,
-            },
+    try {
+      bot.sendMessage(chatId, "Выберете группу", {
+        reply_markup: JSON.stringify({
+          inline_keyboard: [
+            [
+              {
+                text: "Изминить для всех групп",
+                callback_data: `changeForAll:${buttonQueryOption}`,
+              },
+            ],
+            ...availableGroups,
           ],
-          ...availableGroups,
-        ],
-      }),
-    });
+        }),
+      });
+    } catch (error) {
+      bot.sendMessage(chatId, "Ошибка: одна из групп содержит неверный ввод!");
+    }
   } else {
     bot.sendMessage(chatId, "Ошибка при отправке групп.");
   }
