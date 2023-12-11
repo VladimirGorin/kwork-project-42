@@ -1,6 +1,6 @@
 require("dotenv").config({ path: "./assets/.env" });
 
-const TESTMODE = false;
+const TESTMODE = true;
 
 console.log(TESTMODE ? process.env.TOKENTEST : process.env.TOKEN);
 
@@ -635,7 +635,7 @@ bot.on("message", (msg) => {
           }, если у Вас не коммерческое объявление нажмите кнопку «Не коммерческое» и опубликуйте повторно.\n\nЕсли у Вас коммерческое объявление нажмите кнопку Админ\n\n❗️❗️❗️Если Вы опубликуете коммерческое объявление не согласовав с Администратором группы, получите вечный БАН`;
 
           const firstGroupText = foundGroup?.firstText
-            ? `Здравствуйте, ${"@" + user?.nick ? user?.nick : user?.name}, ${
+            ? `Здравствуйте, ${user?.nick ? "@" + user?.nick : user?.name}, ${
                 foundGroup?.firstText
               }`
             : defaultFirstText;
