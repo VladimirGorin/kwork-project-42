@@ -2,7 +2,7 @@ const fs = require("fs");
 const { exec } = require("child_process");
 
 const saveGroups = (msg, bot) => {
-  const chatId = msg.chat.id;
+  const chatId = msg.from.id;
   const users = JSON.parse(fs.readFileSync("./assets/data/users.json"));
   const messageText = msg.text;
 
@@ -70,8 +70,9 @@ const saveGroups = (msg, bot) => {
     }
   });
 };
+
 function saveIgnoredUsers(msg, bot) {
-  const chatId = msg.chat.id;
+  const chatId = msg.from.id;
   const usersData = JSON.parse(fs.readFileSync("./assets/data/users.json"));
   const text = msg.text;
   const user = usersData.filter((x) => x.id === chatId)[0];
@@ -106,7 +107,7 @@ function saveIgnoredUsers(msg, bot) {
 }
 
 function saveNewGroupFirstText(msg, bot) {
-  const chatId = msg.chat.id;
+  const chatId = msg.from.id;
   const usersData = JSON.parse(fs.readFileSync("./assets/data/users.json"));
   const text = msg.text;
   const user = usersData.filter((x) => x.id === chatId)[0];
@@ -138,7 +139,7 @@ function saveNewGroupFirstText(msg, bot) {
 }
 
 function saveNewGroupLastText(msg, bot) {
-  const chatId = msg.chat.id;
+  const chatId = msg.from.id;
   const usersData = JSON.parse(fs.readFileSync("./assets/data/users.json"));
   const text = msg.text;
   const user = usersData.filter((x) => x.id === chatId)[0];
@@ -170,7 +171,7 @@ function saveNewGroupLastText(msg, bot) {
 }
 
 function saveNewButtons(msg, bot) {
-  const chatId = msg.chat.id;
+  const chatId = msg.from.id;
   const usersData = JSON.parse(fs.readFileSync("./assets/data/users.json"));
   const text = msg.text;
   const user = usersData.filter((x) => x.id === chatId)[0];
@@ -239,7 +240,7 @@ function restartBot() {
 }
 
 function saveReceipt(msg, bot, TESTMODE) {
-  const chatId = msg.chat.id;
+  const chatId = msg.from.id;
   const users = JSON.parse(fs.readFileSync("./assets/data/users.json"));
 
   if (msg.document) {
