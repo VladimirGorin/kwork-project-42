@@ -163,7 +163,10 @@ function saveNewGroupLastText(msg, bot) {
     JSON.stringify(usersData, null, "\t")
   );
 
-  bot.sendMessage(chatId, `Сообщение для группы ${selectedGroup} успешно установлено`);
+  bot.sendMessage(
+    chatId,
+    `Сообщение для группы ${selectedGroup} успешно установлено`
+  );
 }
 
 function saveNewButtons(msg, bot) {
@@ -235,7 +238,7 @@ function restartBot() {
   });
 }
 
-function saveReceipt(msg, bot) {
+function saveReceipt(msg, bot, TESTMODE) {
   const chatId = msg.chat.id;
   const users = JSON.parse(fs.readFileSync("./assets/data/users.json"));
 
@@ -263,8 +266,9 @@ function saveReceipt(msg, bot) {
         `Информация о платеже принята и направлена администратору группы\nОжидайте проверки платежа.`
       );
 
-      const adminChatId = process.env.ADMIN_CHAT_ID;
-
+      const adminChatId = TESTMODE
+        ? process.env.TEST_ADMIN_CHAT_ID
+        : process.env.ADMIN_CHAT_ID;
       if (adminChatId) {
         bot.sendDocument(adminChatId, filePath, {
           caption: `Платеж от @${user.nick}`,
@@ -313,11 +317,13 @@ function saveReceipt(msg, bot) {
         `Информация о платеже принята и направлена администратору группы\nОжидайте проверки платежа.`
       );
 
-      const adminChatId = process.env.ADMIN_CHAT_ID;
+      const adminChatId = TESTMODE
+        ? process.env.TEST_ADMIN_CHAT_ID
+        : process.env.ADMIN_CHAT_ID;
 
       if (adminChatId) {
         bot.sendPhoto(adminChatId, filePath, {
-          caption: `Платеж от @${user.nick}`,
+          caption: `Платеж от ${user.nick ? `@${user.nick}`: user.name}`,
           reply_markup: {
             inline_keyboard: [
               [
@@ -350,5 +356,5 @@ module.exports = {
   saveReceipt,
   stopBot,
   saveGroups,
-  restartBot
+  restartBot,
 };

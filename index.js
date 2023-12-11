@@ -1,6 +1,12 @@
 require("dotenv").config({ path: "./assets/.env" });
+
+const TESTMODE = true;
+
 const TelegramBotApi = require("node-telegram-bot-api");
-const bot = new TelegramBotApi(process.env.TOKENTEST, { polling: true });
+const bot = new TelegramBotApi(
+  TESTMODE ? process.env.TOKENTEST : process.env.TOKEN,
+  { polling: true }
+);
 const cron = require("node-cron");
 const fs = require("fs");
 
@@ -75,7 +81,7 @@ const handleAddGroups = (msg) => {
 };
 
 const handleSendReceipt = (msg) => {
-  saveReceipt(msg, bot);
+  saveReceipt(msg, bot, TESTMODE);
   bot.removeListener("message", handleSendReceipt);
 };
 
@@ -268,11 +274,11 @@ function checkPaymentStatus(query) {
 
       bot.sendMessage(
         userWithPaymentId.id,
-        `Подписка проверена и оплачена! Срок действия 30 дней.`
+        `Подписка проверена и оплачена! Срок действия 30 дней. Для активации пропишите /start`
       );
 
       bot.sendMessage(
-        process.env.ADMIN_CHAT_ID,
+        TESTMODE ? process.env.TEST_ADMIN_CHAT_ID : process.env.ADMIN_CHAT_ID,
         `Вы успешно приняли оплату для ${userWithPaymentId.name}!\nПользователю была направлена инструкция`
       );
     }
@@ -403,11 +409,12 @@ function checkSelectedGroup(query, chatId, messageId) {
 
     const availableGroups = user?.groups?.map((g) => [
       {
-        text: user.selectedAllGroups.includes(g.groupName) ? `${g.groupName} ✅` : g.groupName,
+        text: user.selectedAllGroups.includes(g.groupName)
+          ? `${g.groupName} ✅`
+          : g.groupName,
         callback_data: `selectGroupForAllChanges:${g.groupName}`,
       },
     ]);
-
 
     if (!availableGroups.length) {
       bot.sendMessage(chatId, "У вас ещё нет добавленных групп");
@@ -423,7 +430,9 @@ function checkSelectedGroup(query, chatId, messageId) {
     if (checkCopy) {
       const newAvailableGroups = user?.groups?.map((g) => [
         {
-          text: user.selectedAllGroups.includes(g.groupName) ? `${g.groupName} ✅` : g.groupName,
+          text: user.selectedAllGroups.includes(g.groupName)
+            ? `${g.groupName} ✅`
+            : g.groupName,
           callback_data: `selectGroupForAllChanges:${g.groupName}`,
         },
       ]);
@@ -448,14 +457,16 @@ function checkSelectedGroup(query, chatId, messageId) {
           "./assets/data/users.json",
           JSON.stringify(getUserGroups, null, "\t")
         );
-        
+
         const newAvailableGroups = user?.groups?.map((g) => [
           {
-            text: user.selectedAllGroups.includes(g.groupName) ? `${g.groupName} ✅` : g.groupName,
+            text: user.selectedAllGroups.includes(g.groupName)
+              ? `${g.groupName} ✅`
+              : g.groupName,
             callback_data: `selectGroupForAllChanges:${g.groupName}`,
           },
         ]);
-    
+
         bot.sendMessage(
           chatId,
           `Группа ${selectedGroup} успешно выбрана\nВсего выбранно ${selectedAllGroups?.length}`,
@@ -540,11 +551,14 @@ bot.on("message", (msg) => {
   const { type } = msg.chat;
   const { message_id } = msg;
   const getUsers = JSON.parse(fs.readFileSync("./assets/data/users.json"));
-
   let user = getUsers.filter((x) => x.id === msg.from.id)[0];
 
   if (!user) {
-    const admin = chatId === Number(process.env.ADMIN_CHAT_ID)
+    const admin =
+      chatId ===
+      Number(
+        TESTMODE ? process.env.TEST_ADMIN_CHAT_ID : process.env.ADMIN_CHAT_ID
+      );
 
     getUsers.push({
       id: msg.from.id,
@@ -560,6 +574,83 @@ bot.on("message", (msg) => {
       "./assets/data/users.json",
       JSON.stringify(getUsers, null, "\t")
     );
+  }
+
+  const superGroupName = msg.chat?.username;
+  const availableGroups = JSON.parse(
+    fs.readFileSync("./assets/data/users.json")
+  );
+
+  const foundUser = availableGroups.find((user) =>
+    user?.groups?.some((group) => superGroupName === group?.groupName)
+  );
+
+  if (
+    type === "supergroup" &&
+    !msg.from.is_bot &&
+    foundUser.id !== msg.from.id
+  ) {
+    if (foundUser) {
+      if (user?.nick || user?.name !== foundUser.nick || foundUser.name) {
+        const foundGroup = foundUser?.groups?.find(
+          (group) => group?.groupName === superGroupName
+        );
+
+        const acceptedStatus = foundGroup?.ignoredUsers?.find((u) =>
+          u === foundUser?.nick ? foundUser?.nick : foundUser?.name
+        );
+
+        if (!acceptedStatus) {
+          const defaultFirstText = `Здравствуйте, ${
+            user?.nick ? "@" + user?.nick : user?.name
+          }, если у Вас не коммерческое объявление нажмите кнопку «Не коммерческое» и опубликуйте повторно.\n\nЕсли у Вас коммерческое объявление нажмите кнопку Админ\n\n❗️❗️❗️Если Вы опубликуете коммерческое объявление не согласовав с Администратором группы, получите вечный БАН`;
+
+          const firstGroupText = foundGroup?.firstText
+            ? `Здравствуйте, ${"@" + user?.nick ? user?.nick : user?.name}, ${
+                foundGroup?.firstText
+              }`
+            : defaultFirstText;
+
+          const groupAdminButtonURL = foundGroup?.buttons?.[1]?.url;
+          const groupAdminButtonText = foundGroup?.buttons?.[1]?.text;
+
+          const groupNoProfitButtonText = foundGroup?.buttons?.[0]?.text;
+
+          const checkIgnoredUsers = foundGroup?.ignoredUsers?.find(
+            (ignoredUser) => ignoredUser === user?.nick
+          );
+
+          if (!checkIgnoredUsers) {
+            bot.deleteMessage(chatId, message_id);
+            bot
+              .sendMessage(chatId, firstGroupText, {
+                reply_markup: JSON.stringify({
+                  inline_keyboard: [
+                    [
+                      {
+                        text: groupNoProfitButtonText || "Не коммерческое",
+                        callback_data: `nonProfit`,
+                      },
+                    ],
+                    [
+                      {
+                        text: groupAdminButtonText || "Админ",
+                        callback_data: `admin`,
+                        url: groupAdminButtonURL || process.env.ADMIN_URL,
+                      },
+                    ],
+                  ],
+                }),
+              })
+              .then(({ message_id }) => {
+                setTimeout(() => {
+                  bot.deleteMessage(chatId, message_id);
+                }, 120000);
+              });
+          }
+        }
+      }
+    }
   }
 
   switch (command) {
@@ -591,7 +682,12 @@ bot.on("message", (msg) => {
       break;
 
     case "/stop":
-      if (user?.id === Number(process.env.ADMIN_CHAT_ID)) {
+      if (
+        user?.id ===
+        Number(
+          TESTMODE ? process.env.TEST_ADMIN_CHAT_ID : process.env.ADMIN_CHAT_ID
+        )
+      ) {
         stopBot();
       } else {
         bot.sendMessage(chatId, "Вы не админ");
@@ -600,7 +696,12 @@ bot.on("message", (msg) => {
       break;
 
     case "/restart":
-      if (user?.id === Number(process.env.ADMIN_CHAT_ID)) {
+      if (
+        user?.id ===
+        Number(
+          TESTMODE ? process.env.TEST_ADMIN_CHAT_ID : process.env.ADMIN_CHAT_ID
+        )
+      ) {
         restartBot();
       } else {
         bot.sendMessage(chatId, "Вы не админ");
@@ -609,164 +710,147 @@ bot.on("message", (msg) => {
       break;
 
     case "База знаний":
-      const baseInfoText = `@${user?.nick}, База знаний`;
+      const baseInfoText = `${
+        user?.nick ? `@${user?.nick}` : user?.name
+      }, База знаний`;
       bot.sendMessage(chatId, baseInfoText);
+
       break;
 
     case "Тестовый режим (3) дня":
-      if (user?.testActive) {
-        const testSubModeText = `@${user?.nick}, Вы ранее уже активировали трех дневный тестовый режим`;
-        bot.sendMessage(chatId, testSubModeText);
+      if (type !== "supergroup") {
+        if (user?.testActive) {
+          const testSubModeText = `${
+            user?.nick ? `@${user?.nick}` : user?.name
+          }, Вы ранее уже активировали трех дневный тестовый режим`;
+          bot.sendMessage(chatId, testSubModeText);
+        } else {
+          user.haveSub = true;
+          user.testActive = true;
+          user.subDays = 3;
+
+          fs.writeFileSync(
+            "./assets/data/users.json",
+            JSON.stringify(getUsers, null, "\t")
+          );
+
+          const testSubModeText = `${
+            user?.nick ? `@${user?.nick}` : user?.name
+          }, Мы активировали трех дневный тестовый режим. Что бы продолжить нажмите /start`;
+          bot.sendMessage(chatId, testSubModeText);
+        }
       } else {
-        user.haveSub = true;
-        user.testActive = true;
-        user.subDays = 3;
-
-        fs.writeFileSync(
-          "./assets/data/users.json",
-          JSON.stringify(getUsers, null, "\t")
+        bot.sendMessage(
+          chatId,
+          `Команда ${command} доступна только в лс с ботом!`
         );
-
-        const testSubModeText = `@${user?.nick}, Мы активировали трех дневный тестовый режим. Что бы продолжить нажмите /start`;
-        bot.sendMessage(chatId, testSubModeText);
       }
       break;
 
     case "Купить доступ":
-      const buySubText = `@${user?.nick}, Отправьте скриншот в формате jpg, png`;
-      bot.sendMessage(chatId, buySubText);
-      bot.on("photo", handleSendReceipt);
+      if (type !== "supergroup") {
+        const buySubText = `${
+          user?.nick ? `@${user?.nick}` : user?.name
+        }, Отправьте скриншот в формате jpg, png`;
+        bot.sendMessage(chatId, buySubText);
+        bot.on("photo", handleSendReceipt);
+      } else {
+        bot.sendMessage(
+          chatId,
+          `Команда ${command} доступна только в лс с ботом!`
+        );
+      }
       break;
 
     case "Связь с разработчиком":
       const contactWithCreatorText = `${process.env.ADMIN_URL}`;
       bot.sendMessage(chatId, contactWithCreatorText);
+
       break;
 
     case "Добавить группы":
-      if (user?.haveSub) {
-        const text = `Введите канал, группы через запятую пример:\nГруппа1, Группа2`;
-        bot.sendMessage(chatId, text);
-        bot.on("message", handleAddGroups);
+      if (type !== "supergroup") {
+        if (user?.haveSub) {
+          const text = `Введите канал, группы через запятую пример:\nГруппа1, Группа2`;
+          bot.sendMessage(chatId, text);
+          bot.on("message", handleAddGroups);
+        } else {
+          bot.sendMessage(chatId, "У вас нету подписки");
+        }
       } else {
-        bot.sendMessage(chatId, "У вас нету подписки");
+        bot.sendMessage(
+          chatId,
+          `Команда ${command} доступна только в лс с ботом!`
+        );
       }
 
       break;
 
     case "Добавить людей в игнор":
-      if (user?.haveSub) {
-        selectGroup(chatId, command);
+      if (type !== "supergroup") {
+        if (user?.haveSub) {
+          selectGroup(chatId, command);
+        } else {
+          bot.sendMessage(chatId, "У вас нету подписки");
+        }
       } else {
-        bot.sendMessage(chatId, "У вас нету подписки");
+        bot.sendMessage(
+          chatId,
+          `Команда ${command} доступна только в лс с ботом!`
+        );
       }
 
       break;
 
     case "Добавить текст для первого сообщения в группе":
-      if (user?.haveSub) {
-        selectGroup(chatId, command);
+      if (type !== "supergroup") {
+        if (user?.haveSub) {
+          selectGroup(chatId, command);
+        } else {
+          bot.sendMessage(chatId, "У вас нету подписки");
+        }
       } else {
-        bot.sendMessage(chatId, "У вас нету подписки");
+        bot.sendMessage(
+          chatId,
+          `Команда ${command} доступна только в лс с ботом!`
+        );
       }
 
       break;
 
     case "Добавить текст для второго сообщения в группе":
-      if (user?.haveSub) {
-        selectGroup(chatId, command);
+      if (type !== "supergroup") {
+        if (user?.haveSub) {
+          selectGroup(chatId, command);
+        } else {
+          bot.sendMessage(chatId, "У вас нету подписки");
+        }
       } else {
-        bot.sendMessage(chatId, "У вас нету подписки");
+        bot.sendMessage(
+          chatId,
+          `Команда ${command} доступна только в лс с ботом!`
+        );
       }
 
       break;
 
     case "Изменения кнопок":
-      if (user?.haveSub) {
-        selectGroup(chatId, command);
+      if (type !== "supergroup") {
+        if (user?.haveSub) {
+          selectGroup(chatId, command);
+        } else {
+          bot.sendMessage(chatId, "У вас нету подписки");
+        }
       } else {
-        bot.sendMessage(chatId, "У вас нету подписки");
+        bot.sendMessage(
+          chatId,
+          `Команда ${command} доступна только в лс с ботом!`
+        );
       }
 
       break;
 
     default:
-      if (type === "supergroup") {
-        const superGroupName = msg.chat?.username;
-        const availableGroups = JSON.parse(
-          fs.readFileSync("./assets/data/users.json")
-        );
-
-        const foundUser = availableGroups.find((user) =>
-          user?.groups?.some((group) => superGroupName === group?.groupName)
-        );
-
-        if (foundUser) {
-          if (foundUser.haveSub) {
-            if (user.nick !== foundUser.nick) {
-              const foundGroup = foundUser?.groups?.find(
-                (group) => group?.groupName === superGroupName
-              );
-
-              const acceptedStatus = foundGroup?.ignoredUsers?.find(
-                (u) => u === foundUser?.nick || foundUser?.name
-              );
-
-              if (!acceptedStatus) {
-                const defaultFirstText = `Здравствуйте, ${
-                  "@" + user?.nick || user?.name
-                }, если у Вас не коммерческое объявление нажмите кнопку «Не коммерческое» и опубликуйте повторно.\n\nЕсли у Вас коммерческое объявление нажмите кнопку Админ\n\n❗️❗️❗️Если Вы опубликуете коммерческое объявление не согласовав с Администратором группы, получите вечный БАН`;
-
-                const firstGroupText = foundGroup?.firstText
-                  ? `Здравствуйте, ${"@" + user?.nick || user?.name}, ${
-                      foundGroup?.firstText
-                    }`
-                  : defaultFirstText;
-
-                const groupAdminButtonURL = foundGroup?.buttons?.[1]?.url;
-                const groupAdminButtonText = foundGroup?.buttons?.[1]?.text;
-
-                const groupNoProfitButtonText = foundGroup?.buttons?.[0]?.text;
-
-                const checkIgnoredUsers = foundGroup?.ignoredUsers?.find(
-                  (ignoredUser) => ignoredUser === user?.nick
-                );
-
-                if (!checkIgnoredUsers) {
-                  bot.deleteMessage(chatId, message_id);
-                  bot
-                    .sendMessage(chatId, firstGroupText, {
-                      reply_markup: JSON.stringify({
-                        inline_keyboard: [
-                          [
-                            {
-                              text:
-                                groupNoProfitButtonText || "Не коммерческое",
-                              callback_data: `nonProfit`,
-                            },
-                          ],
-                          [
-                            {
-                              text: groupAdminButtonText || "Админ",
-                              callback_data: `admin`,
-                              url: groupAdminButtonURL || process.env.ADMIN_URL,
-                            },
-                          ],
-                        ],
-                      }),
-                    })
-                    .then(({ message_id }) => {
-                      setTimeout(() => {
-                        bot.deleteMessage(chatId, message_id);
-                      }, 120000);
-                    });
-                }
-              }
-            }
-          }
-        }
-      }
-
       break;
   }
 });
@@ -791,7 +875,7 @@ bot.on("callback_query", (msg) => {
       );
 
       if (foundUser && foundUser?.haveSub) {
-        if (user?.nick !== foundUser?.nick) {
+        if (user?.nick || user?.name !== foundUser?.nick || foundUser?.name) {
           const foundGroup = foundUser?.groups?.find(
             (group) => group?.groupName === superGroupName
           );
@@ -802,14 +886,16 @@ bot.on("callback_query", (msg) => {
 
           if (!acceptedStatus) {
             const defaultLastText = `${
-              `@${user?.nick}` || user?.name
+              user?.nick ? `@${user?.nick}` : user?.name
             }, Теперь у вас есть доступ к отправке сообщений\n\n❗️❗️❗️Если Вы опубликуете коммерческое объявление не согласовав с Администратором группы, получите вечный БАН`;
 
             const lastGroupText = foundGroup?.lastText
-              ? `${`@${user?.nick}` || user?.name}, ${foundGroup?.lastText}`
+              ? `${user?.nick ? `@${user?.nick}` : user?.name}, ${
+                  foundGroup?.lastText
+                }`
               : defaultLastText;
 
-            foundGroup.ignoredUsers.push(user?.nick || user?.name);
+            foundGroup.ignoredUsers.push(user?.nick ? user?.nick : user?.name);
 
             fs.writeFileSync(
               "./assets/data/users.json",
