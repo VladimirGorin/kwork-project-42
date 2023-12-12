@@ -27,6 +27,8 @@ const groupLogger = winston.createLogger({
   ],
 });
 
+
+
 const errorLogger = winston.createLogger({
   level: "error",
   format: combine(
@@ -664,7 +666,7 @@ try {
     );
 
     groupLogger.info(
-      `name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:founderObject:${foundUser}:fromObject:${msg.from}`
+      `name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:founderObject:${foundUser?.chatId}:fromObject:${msg.from.id}\n`
     );
 
     if (
@@ -683,7 +685,7 @@ try {
           );
 
           groupLogger.info(
-            `name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:acceptedStatus:${acceptedStatus}:foundGroup:${foundGroup}`
+            `name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:acceptedStatus:${acceptedStatus}:foundGroup:${foundGroup?.groupName}\n`
           );
 
           if (!acceptedStatus) {
