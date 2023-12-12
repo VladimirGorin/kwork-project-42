@@ -679,7 +679,7 @@ try {
           (group) => group?.groupName === superGroupName
           );
 
-        console.log(superGroupName, foundGroup)
+        console.log(superGroupName, foundGroup.name)
 
         const acceptedStatus = foundGroup?.ignoredUsers?.find((u) =>
           u === foundUser?.nick ? foundUser?.nick : foundUser?.name
