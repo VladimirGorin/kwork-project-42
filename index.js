@@ -679,11 +679,11 @@ try {
 
         const acceptedStatus = foundGroup?.ignoredUsers?.includes(user?.nick || user?.name);
 
-        // console.log("\n")
-        // console.log(user)
-        // console.log(foundGroup?.ignoredUsers, superGroupName);
-        // console.log(acceptedStatus);
-        // console.log("\n")
+        console.log("\n")
+        console.log(user)
+        console.log(foundGroup?.ignoredUsers, superGroupName);
+        console.log(acceptedStatus);
+        console.log("\n")
         
         groupLogger.info(
           `step: 2:name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:acceptedStatus:${acceptedStatus}:foundGroup:${foundGroup?.groupName}\n`
