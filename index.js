@@ -2,7 +2,7 @@ require("dotenv").config({ path: "./assets/.env" });
 const winston = require("winston");
 const { combine, timestamp, printf } = winston.format;
 
-const TESTMODE = false;
+const TESTMODE = true;
 
 const TelegramBotApi = require("node-telegram-bot-api");
 const bot = new TelegramBotApi(
@@ -26,8 +26,6 @@ const groupLogger = winston.createLogger({
     }),
   ],
 });
-
-
 
 const errorLogger = winston.createLogger({
   level: "error",
@@ -666,7 +664,7 @@ try {
     );
 
     groupLogger.info(
-      `name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:founderObject:${foundUser?.chatId}:fromObject:${msg.from.id}\n`
+      `step: 1:name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:founderObject:${foundUser?.id}:fromObject:${msg.from.id}\n`
     );
 
     if (
@@ -675,66 +673,64 @@ try {
       foundUser?.id !== msg.from.id
     ) {
       if (foundUser) {
-        if (user?.nick || user?.name !== foundUser.nick || foundUser.name) {
-          const foundGroup = foundUser?.groups?.find(
-            (group) => group?.groupName === superGroupName
-          );
+        const foundGroup = foundUser?.groups?.find(
+          (group) => group?.groupName === superGroupName
+        );
 
-          const acceptedStatus = foundGroup?.ignoredUsers?.find((u) =>
-            u === foundUser?.nick ? foundUser?.nick : foundUser?.name
-          );
+        const acceptedStatus = foundGroup?.ignoredUsers?.find((u) =>
+          u === foundUser?.nick ? foundUser?.nick : foundUser?.name
+        );
 
-          groupLogger.info(
-            `name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:acceptedStatus:${acceptedStatus}:foundGroup:${foundGroup?.groupName}\n`
-          );
+        groupLogger.info(
+          `step: 2:name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:acceptedStatus:${acceptedStatus}:foundGroup:${foundGroup?.groupName}\n`
+        );
 
-          if (!acceptedStatus) {
-            const defaultFirstText = `Здравствуйте, ${
-              user?.nick ? "@" + user?.nick : user?.name
-            }, если у Вас не коммерческое объявление нажмите кнопку «Не коммерческое» и опубликуйте повторно.\n\nЕсли у Вас коммерческое объявление нажмите кнопку Админ\n\n❗️❗️❗️Если Вы опубликуете коммерческое объявление не согласовав с Администратором группы, получите вечный БАН`;
+        if (!acceptedStatus) {
+          const defaultFirstText = `Здравствуйте, ${
+            user?.nick ? "@" + user?.nick : user?.name
+          }, если у Вас не коммерческое объявление нажмите кнопку «Не коммерческое» и опубликуйте повторно.\n\nЕсли у Вас коммерческое объявление нажмите кнопку Админ\n\n❗️❗️❗️Если Вы опубликуете коммерческое объявление не согласовав с Администратором группы, получите вечный БАН`;
 
-            const firstGroupText = foundGroup?.firstText
-              ? `Здравствуйте, ${user?.nick ? "@" + user?.nick : user?.name}, ${
-                  foundGroup?.firstText
-                }`
-              : defaultFirstText;
+          const firstGroupText = foundGroup?.firstText
+            ? `Здравствуйте, ${user?.nick ? "@" + user?.nick : user?.name}, ${
+                foundGroup?.firstText
+              }`
+            : defaultFirstText;
 
-            const groupAdminButtonURL = foundGroup?.buttons?.[1]?.url;
-            const groupAdminButtonText = foundGroup?.buttons?.[1]?.text;
+          const groupAdminButtonURL = foundGroup?.buttons?.[1]?.url;
+          const groupAdminButtonText = foundGroup?.buttons?.[1]?.text;
 
-            const groupNoProfitButtonText = foundGroup?.buttons?.[0]?.text;
+          const groupNoProfitButtonText = foundGroup?.buttons?.[0]?.text;
 
-            // const checkIgnoredUsers = foundGroup?.ignoredUsers?.find(
-            //   (ignoredUser) => ignoredUser === user?.nick
-            // );
+          // const checkIgnoredUsers = foundGroup?.ignoredUsers?.find(
+          //   (ignoredUser) => ignoredUser === user?.nick
+          // );
 
-            bot.deleteMessage(chatId, message_id);
-            bot
-              .sendMessage(chatId, firstGroupText, {
-                reply_markup: JSON.stringify({
-                  inline_keyboard: [
-                    [
-                      {
-                        text: groupNoProfitButtonText || "Не коммерческое",
-                        callback_data: `nonProfit`,
-                      },
-                    ],
-                    [
-                      {
-                        text: groupAdminButtonText || "Админ",
-                        callback_data: `admin`,
-                        url: groupAdminButtonURL || process.env.ADMIN_URL,
-                      },
-                    ],
+          bot.deleteMessage(chatId, message_id);
+          bot
+            .sendMessage(chatId, firstGroupText, {
+              reply_markup: JSON.stringify({
+                inline_keyboard: [
+                  [
+                    {
+                      text: groupNoProfitButtonText || "Не коммерческое",
+                      callback_data: `nonProfit`,
+                    },
                   ],
-                }),
-              })
-              .then(({ message_id }) => {
-                setTimeout(() => {
-                  bot.deleteMessage(chatId, message_id);
-                }, 120000);
-              });
-          }
+                  [
+                    {
+                      text: groupAdminButtonText || "Админ",
+                      callback_data: `admin`,
+                      url: groupAdminButtonURL || process.env.ADMIN_URL,
+                    },
+                  ],
+                ],
+              }),
+            })
+            .then(({ message_id }) => {
+              setTimeout(() => {
+                bot.deleteMessage(chatId, message_id);
+              }, 120000);
+            });
         }
       }
     }
@@ -1030,10 +1026,9 @@ try {
       );
     });
   });
-
 } catch (error) {
-  console.log("Have new error! Check in logs")
-  errorLogger.error(error)
+  console.log("Have new error! Check in logs");
+  errorLogger.error(error);
 }
 
 bot.on("polling_error", console.log);

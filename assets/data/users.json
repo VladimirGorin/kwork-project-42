@@ -39,7 +39,6 @@
 			{
 				"groupName": "baraholkavltop",
 				"ignoredUsers": [
-					null,
 					"SamikK001",
 					"klassen_nastya",
 					"Nick9309",
@@ -153,9 +152,7 @@
 			},
 			{
 				"groupName": "skupka_125_1",
-				"ignoredUsers": [
-					"Heso"
-				],
+				"ignoredUsers": [],
 				"firstText": "Если у вас не Рекламное объявление нажмите кнопку «НЕ РЕКЛАМНОЕ» и опубликуйте повторно.\n\nЕсли у вас Рекламное объявление нажмите кнопку Админ.\n\nЦена рекламного поста в этой группе 150р.\nЦена рекламного поста в 9 групп по Вл 499р.\nЦена рекламного поста в 40 групп по Приморскому краю 1499р",
 				"lastText": "❗️❗️❗️Если Вы опубликуете рекламное объявление не согласовав с Администратором группы, получите вечный БАН",
 				"buttons": [
@@ -205,7 +202,6 @@
 			{
 				"groupName": "skupka_125_4",
 				"ignoredUsers": [
-					null,
 					"elenaship_ko",
 					"elenaship_ko",
 					"elenaship_ko",
@@ -1490,9 +1486,18 @@
 		"id": 1454688178,
 		"nick": "HesoyamiJs",
 		"name": "Heso",
-		"groups": [],
-		"haveSub": false,
-		"subDays": null
+		"groups": [
+			{
+				"groupName": "sdasadsdaadsasdd",
+				"ignoredUsers": [],
+				"firstText": null,
+				"lastText": null,
+				"buttons": []
+			}
+		],
+		"haveSub": true,
+		"subDays": 3,
+		"testActive": true
 	},
 	{
 		"id": 1677298747,
