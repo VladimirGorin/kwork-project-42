@@ -2,7 +2,7 @@ require("dotenv").config({ path: "./assets/.env" });
 const winston = require("winston");
 const { combine, timestamp, printf } = winston.format;
 
-const TESTMODE = true;
+const TESTMODE = false;
 
 const TelegramBotApi = require("node-telegram-bot-api");
 const bot = new TelegramBotApi(
