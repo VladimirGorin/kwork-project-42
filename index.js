@@ -672,14 +672,20 @@ try {
       !msg.from.is_bot &&
       foundUser?.id !== msg.from.id
     ) {
+
+      console.log(foundUser)
       if (foundUser) {
         const foundGroup = foundUser?.groups?.find(
           (group) => group?.groupName === superGroupName
-        );
+          );
+
+        console.log(superGroupName, foundGroup)
 
         const acceptedStatus = foundGroup?.ignoredUsers?.find((u) =>
           u === foundUser?.nick ? foundUser?.nick : foundUser?.name
         );
+
+        console.log(acceptedStatus)
 
         groupLogger.info(
           `step: 2:name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:acceptedStatus:${acceptedStatus}:foundGroup:${foundGroup?.groupName}\n`
