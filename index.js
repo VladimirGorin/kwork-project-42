@@ -681,20 +681,20 @@ try {
           user?.nick || user?.name
         );
 
-        let sendedMessages = foundGroup?.sendedMessages;
+        // let sendedMessages = foundGroup?.sendedMessages;
 
-        if (sendedMessages === undefined) {
-          foundGroup.sendedMessages = [];
+        // if (sendedMessages === undefined) {
+        //   foundGroup.sendedMessages = [];
 
-          fs.writeFileSync(
-            "./assets/data/users.json",
-            JSON.stringify(availableGroups, null, "\t")
-          );
-        }
+        //   fs.writeFileSync(
+        //     "./assets/data/users.json",
+        //     JSON.stringify(availableGroups, null, "\t")
+        //   );
+        // }
 
-        const findUserInSendedUsers = foundGroup.sendedMessages.includes(
-          user?.nick || user?.name
-        );
+        // const findUserInSendedUsers = foundGroup.sendedMessages.includes(
+        //   user?.nick || user?.name
+        // );
 
         // console.log("\n")
         // console.log(user)
@@ -703,8 +703,11 @@ try {
         // console.log("\n")
 
         groupLogger.info(
-          `step: 2:name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:acceptedStatus:${acceptedStatus}:foundGroup:${foundGroup?.groupName}:sendedMessages:${sendedMessages}\n`
+          `step: 2:name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:acceptedStatus:${acceptedStatus}:foundGroup:${foundGroup?.groupName}\n`
         );
+        // groupLogger.info(
+        //   `step: 2:name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:acceptedStatus:${acceptedStatus}:foundGroup:${foundGroup?.groupName}:sendedMessages:${sendedMessages}\n`
+        // );
 
         if (!acceptedStatus) {
           const defaultFirstText = `Здравствуйте, ${
@@ -723,47 +726,72 @@ try {
           const groupNoProfitButtonText = foundGroup?.buttons?.[0]?.text;
 
           bot.deleteMessage(chatId, message_id);
-          if (!findUserInSendedUsers) {
-            foundGroup.sendedMessages.push(user?.nick || user?.name);
+          // if (!findUserInSendedUsers) {
+          //   foundGroup.sendedMessages.push(user?.nick || user?.name);
 
-            fs.writeFileSync(
-              "./assets/data/users.json",
-              JSON.stringify(availableGroups, null, "\t")
-            );
+          //   fs.writeFileSync(
+          //     "./assets/data/users.json",
+          //     JSON.stringify(availableGroups, null, "\t")
+          //   );
 
-            bot
-              .sendMessage(chatId, firstGroupText, {
-                reply_markup: JSON.stringify({
-                  inline_keyboard: [
-                    [
-                      {
-                        text: groupNoProfitButtonText || "Не коммерческое",
-                        callback_data: `nonProfit`,
-                      },
-                    ],
-                    [
-                      {
-                        text: groupAdminButtonText || "Админ",
-                        callback_data: `admin`,
-                        url: groupAdminButtonURL || process.env.ADMIN_URL,
-                      },
-                    ],
+          //   bot
+          //     .sendMessage(chatId, firstGroupText, {
+          //       reply_markup: JSON.stringify({
+          //         inline_keyboard: [
+          //           [
+          //             {
+          //               text: groupNoProfitButtonText || "Не коммерческое",
+          //               callback_data: `nonProfit`,
+          //             },
+          //           ],
+          //           [
+          //             {
+          //               text: groupAdminButtonText || "Админ",
+          //               callback_data: `admin`,
+          //               url: groupAdminButtonURL || process.env.ADMIN_URL,
+          //             },
+          //           ],
+          //         ],
+          //       }),
+          //     })
+          //     .then(({ message_id }) => {
+          //       setTimeout(() => {
+          //         bot.deleteMessage(chatId, message_id);
+          //       }, 120000);
+          //     });
+          // }
+
+          bot
+            .sendMessage(chatId, firstGroupText, {
+              reply_markup: JSON.stringify({
+                inline_keyboard: [
+                  [
+                    {
+                      text: groupNoProfitButtonText || "Не коммерческое",
+                      callback_data: `nonProfit`,
+                    },
                   ],
-                }),
-              })
-              .then(({ message_id }) => {
-                setTimeout(() => {
-                  bot.deleteMessage(chatId, message_id);
-                }, 120000);
-              });
-          }
+                  [
+                    {
+                      text: groupAdminButtonText || "Админ",
+                      callback_data: `admin`,
+                      url: groupAdminButtonURL || process.env.ADMIN_URL,
+                    },
+                  ],
+                ],
+              }),
+            })
+            .then(({ message_id }) => {
+              setTimeout(() => {
+                bot.deleteMessage(chatId, message_id);
+              }, 120000);
+            });
         }
       }
     }
 
     switch (command) {
       case "/test":
-
         // const availableGroups = user?.groups
         //   ?.map((g) => {
 
@@ -789,7 +817,6 @@ try {
         //     ];
         //   })
         //   .filter(Boolean);
-
 
         // bot.sendMessage(chatId, "test", {
         //   reply_markup: JSON.stringify({
