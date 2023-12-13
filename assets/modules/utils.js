@@ -44,6 +44,7 @@ const saveGroups = (msg, bot) => {
           user.groups.push({
             groupName,
             ignoredUsers: [],
+            sendedMessages: [],
             firstText: null,
             lastText: null,
             buttons: [],

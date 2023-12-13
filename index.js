@@ -80,10 +80,10 @@ try {
 
     const availableGroups = user?.groups
       ?.map((g) => {
-        if (g.groupName.length >= 20) {
+        if (g.groupName.length >= 30) {
           bot.sendMessage(
             chatId,
-            `Группа "${g.groupName}" содержит более 20 символов. Она была удалена из списка ваших групп`
+            `Группа "${g.groupName}" содержит более 30 символов. Она была удалена из списка ваших групп`
           );
           user.groups = user.groups.filter(
             (group) => group.groupName !== g.groupName
@@ -97,7 +97,7 @@ try {
         return [
           {
             text: g.groupName,
-            callback_data: `selectedGroup:${g.groupName},${buttonQueryOption}`,
+            callback_data: `SG:${g.groupName},${buttonQueryOption}`,
           },
         ];
       })
@@ -360,7 +360,7 @@ try {
   }
 
   function checkSelectedGroup(query, chatId, messageId) {
-    if (query.includes("selectedGroup:")) {
+    if (query.includes("SG:")) {
       const extractData = query.split(":")[1].split(",");
 
       const getUserGroups = JSON.parse(
@@ -677,16 +677,33 @@ try {
           (group) => group?.groupName === superGroupName
         );
 
-        const acceptedStatus = foundGroup?.ignoredUsers?.includes(user?.nick || user?.name);
+        const acceptedStatus = foundGroup?.ignoredUsers?.includes(
+          user?.nick || user?.name
+        );
+
+        let sendedMessages = foundGroup?.sendedMessages;
+
+        if (sendedMessages === undefined) {
+          foundGroup.sendedMessages = [];
+
+          fs.writeFileSync(
+            "./assets/data/users.json",
+            JSON.stringify(availableGroups, null, "\t")
+          );
+        }
+
+        const findUserInSendedUsers = foundGroup.sendedMessages.includes(
+          user?.nick || user?.name
+        );
 
         // console.log("\n")
         // console.log(user)
         // console.log(foundGroup?.ignoredUsers, superGroupName);
         // console.log(acceptedStatus);
         // console.log("\n")
-        
+
         groupLogger.info(
-          `step: 2:name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:acceptedStatus:${acceptedStatus}:foundGroup:${foundGroup?.groupName}\n`
+          `step: 2:name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:acceptedStatus:${acceptedStatus}:foundGroup:${foundGroup?.groupName}:sendedMessages:${sendedMessages}\n`
         );
 
         if (!acceptedStatus) {
@@ -705,41 +722,83 @@ try {
 
           const groupNoProfitButtonText = foundGroup?.buttons?.[0]?.text;
 
-          // const checkIgnoredUsers = foundGroup?.ignoredUsers?.find(
-          //   (ignoredUser) => ignoredUser === user?.nick
-          // );
-
           bot.deleteMessage(chatId, message_id);
-          bot
-            .sendMessage(chatId, firstGroupText, {
-              reply_markup: JSON.stringify({
-                inline_keyboard: [
-                  [
-                    {
-                      text: groupNoProfitButtonText || "Не коммерческое",
-                      callback_data: `nonProfit`,
-                    },
+          if (!findUserInSendedUsers) {
+            foundGroup.sendedMessages.push(user?.nick || user?.name);
+
+            fs.writeFileSync(
+              "./assets/data/users.json",
+              JSON.stringify(availableGroups, null, "\t")
+            );
+
+            bot
+              .sendMessage(chatId, firstGroupText, {
+                reply_markup: JSON.stringify({
+                  inline_keyboard: [
+                    [
+                      {
+                        text: groupNoProfitButtonText || "Не коммерческое",
+                        callback_data: `nonProfit`,
+                      },
+                    ],
+                    [
+                      {
+                        text: groupAdminButtonText || "Админ",
+                        callback_data: `admin`,
+                        url: groupAdminButtonURL || process.env.ADMIN_URL,
+                      },
+                    ],
                   ],
-                  [
-                    {
-                      text: groupAdminButtonText || "Админ",
-                      callback_data: `admin`,
-                      url: groupAdminButtonURL || process.env.ADMIN_URL,
-                    },
-                  ],
-                ],
-              }),
-            })
-            .then(({ message_id }) => {
-              setTimeout(() => {
-                bot.deleteMessage(chatId, message_id);
-              }, 120000);
-            });
+                }),
+              })
+              .then(({ message_id }) => {
+                setTimeout(() => {
+                  bot.deleteMessage(chatId, message_id);
+                }, 120000);
+              });
+          }
         }
       }
     }
 
     switch (command) {
+      case "/test":
+
+        // const availableGroups = user?.groups
+        //   ?.map((g) => {
+
+        //     if (g.groupName.length >= 30) {
+        //       bot.sendMessage(
+        //         chatId,
+        //         `Группа "${g.groupName}" содержит более 30 символов. Она была удалена из списка ваших групп`
+        //       );
+        //       user.groups = user.groups.filter(
+        //         (group) => group.groupName !== g.groupName
+        //       );
+        //       fs.writeFileSync(
+        //         "./assets/data/users.json",
+        //         JSON.stringify(getUserGroups, null, 2)
+        //       );
+        //       return null;
+        //     }
+        //     return [
+        //       {
+        //         text: g.groupName,
+        //         callback_data: `SG:${g.groupName},addIgnoredUsers`,
+        //       },
+        //     ];
+        //   })
+        //   .filter(Boolean);
+
+
+        // bot.sendMessage(chatId, "test", {
+        //   reply_markup: JSON.stringify({
+        //     inline_keyboard: availableGroups,
+        //   }),
+        // });
+
+        break;
+
       case "/start":
         if (user?.haveSub) {
           bot.sendMessage(chatId, "Вы подписаны", {
@@ -802,8 +861,20 @@ try {
       case "База знаний":
         const baseInfoText = `${
           user?.nick ? `@${user?.nick}` : user?.name
-        }, База знаний`;
-        bot.sendMessage(chatId, baseInfoText);
+        }, На нашем канале вы найдете базу знаний`;
+        bot.sendMessage(chatId, baseInfoText, {
+          reply_markup: JSON.stringify({
+            inline_keyboard: [
+              [
+                {
+                  text: "Перейти на канал",
+                  callback_data: `baseInfo`,
+                  url: process.env.CHANNEL_NAME,
+                },
+              ],
+            ],
+          }),
+        });
 
         break;
 
@@ -838,10 +909,10 @@ try {
         break;
 
       case "Купить доступ":
-        if (type !== "supergroup") {
+        if (type === "private") {
           const buySubText = `${
             user?.nick ? `@${user?.nick}` : user?.name
-          }, Отправьте скриншот в формате jpg, png`;
+          }, Реквизиты:\n\n5536914033399514\nТинькофф\n\nПосле оплаты отправьте скриншот в формате jpg, png`;
           bot.sendMessage(chatId, buySubText);
           bot.on("photo", handleSendReceipt);
         } else {
@@ -970,7 +1041,9 @@ try {
               (group) => group?.groupName === superGroupName
             );
 
-            const acceptedStatus = foundGroup?.ignoredUsers?.includes(user?.nick || user?.name);
+            const acceptedStatus = foundGroup?.ignoredUsers?.includes(
+              user?.nick || user?.name
+            );
 
             if (!acceptedStatus) {
               const defaultLastText = `${
@@ -1018,6 +1091,8 @@ try {
       if (!item.subDays) {
         item.haveSub = false;
         item.subDays = null;
+
+        bot.sendMessage(item.id, "Ваша подписка истекла!");
       } else {
         item.subDays -= 1;
       }
