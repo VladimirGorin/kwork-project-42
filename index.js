@@ -667,7 +667,7 @@ try {
       `step: 1:name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:founderObject:${foundUser?.id}:fromObject:${msg.from.id}\n`
     );
 
-    console.log(`\n${type}, ${msg.from.is_bot}, ${foundUser}`);
+    console.log(`\n${superGroupName} ${type}, ${msg.from.is_bot}, ${foundUser}`);
     if (
       type === "supergroup" &&
       !msg.from.is_bot &&
