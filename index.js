@@ -667,15 +667,18 @@ try {
       `step: 1:name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:founderObject:${foundUser?.id}:fromObject:${msg.from.id}\n`
     );
 
+    console.log(`\n${type}, ${msg.from.is_bot}, ${foundUser}`);
     if (
       type === "supergroup" &&
       !msg.from.is_bot &&
       foundUser?.id !== msg.from.id
     ) {
+      console.log("hrere 1");
       if (foundUser) {
         const foundGroup = foundUser?.groups?.find(
           (group) => group?.groupName === superGroupName
         );
+        console.log("hrere 2");
 
         const acceptedStatus = foundGroup?.ignoredUsers?.includes(
           user?.nick || user?.name
@@ -685,11 +688,11 @@ try {
           `step: 2:name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:acceptedStatus:${acceptedStatus}:foundGroup:${foundGroup?.groupName}\n`
         );
 
-        console.log("\n")
-        console.log(user)
+        console.log("\n");
+        console.log(user);
         console.log(foundGroup?.ignoredUsers, superGroupName);
         console.log(acceptedStatus);
-        console.log("\n")
+        console.log("\n");
 
         if (!acceptedStatus) {
           const defaultFirstText = `Здравствуйте, ${
