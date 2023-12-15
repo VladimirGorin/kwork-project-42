@@ -685,6 +685,12 @@ try {
           `step: 2:name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:acceptedStatus:${acceptedStatus}:foundGroup:${foundGroup?.groupName}\n`
         );
 
+        console.log("\n")
+        console.log(user)
+        console.log(foundGroup?.ignoredUsers, superGroupName);
+        console.log(acceptedStatus);
+        console.log("\n")
+
         if (!acceptedStatus) {
           const defaultFirstText = `Здравствуйте, ${
             user?.nick ? "@" + user?.nick : user?.name
@@ -703,56 +709,31 @@ try {
 
           bot.deleteMessage(chatId, message_id);
 
-          if (user?.sleep === undefined) {
-            user.sleep = false;
-
-            fs.writeFileSync(
-              "./assets/data/users.json",
-              JSON.stringify(getUsers, null, "\t")
-            );
-          } else {
-            if (user?.sleep) {
+          bot
+            .sendMessage(chatId, firstGroupText, {
+              reply_markup: JSON.stringify({
+                inline_keyboard: [
+                  [
+                    {
+                      text: groupNoProfitButtonText || "Не коммерческое",
+                      callback_data: `nonProfit`,
+                    },
+                  ],
+                  [
+                    {
+                      text: groupAdminButtonText || "Админ",
+                      callback_data: `admin`,
+                      url: groupAdminButtonURL || process.env.ADMIN_URL,
+                    },
+                  ],
+                ],
+              }),
+            })
+            .then(({ message_id }) => {
               setTimeout(() => {
-                user.sleep = false;
-                fs.writeFileSync(
-                  "./assets/data/users.json",
-                  JSON.stringify(getUsers, null, "\t")
-                );
-              }, 9000);
-            } else {
-              bot
-                .sendMessage(chatId, firstGroupText, {
-                  reply_markup: JSON.stringify({
-                    inline_keyboard: [
-                      [
-                        {
-                          text: groupNoProfitButtonText || "Не коммерческое",
-                          callback_data: `nonProfit`,
-                        },
-                      ],
-                      [
-                        {
-                          text: groupAdminButtonText || "Админ",
-                          callback_data: `admin`,
-                          url: groupAdminButtonURL || process.env.ADMIN_URL,
-                        },
-                      ],
-                    ],
-                  }),
-                })
-                .then(({ message_id }) => {
-                  setTimeout(() => {
-                    bot.deleteMessage(chatId, message_id);
-                  }, 120000);
-                });
-
-              user.sleep = true;
-              fs.writeFileSync(
-                "./assets/data/users.json",
-                JSON.stringify(getUsers, null, "\t")
-              );
-            }
-          }
+                bot.deleteMessage(chatId, message_id);
+              }, 120000);
+            });
         }
       }
     }
