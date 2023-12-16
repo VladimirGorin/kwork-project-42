@@ -2,7 +2,7 @@ require("dotenv").config({ path: "./assets/.env" });
 const winston = require("winston");
 const { combine, timestamp, printf } = winston.format;
 
-const TESTMODE = true;
+const TESTMODE = false;
 
 const TelegramBotApi = require("node-telegram-bot-api");
 const bot = new TelegramBotApi(
@@ -341,6 +341,7 @@ try {
       if (userWithPaymentId) {
         userWithPaymentId.haveSub = true;
         userWithPaymentId.subDays = 30;
+        userWithPaymentId.isTestMode = false;
 
         fs.writeFileSync(
           "./assets/data/users.json",
@@ -679,7 +680,7 @@ try {
       foundUser?.id !== msg.from.id
     ) {
       console.log("hrere 1");
-      if (foundUser) {
+      if (foundUser && foundUser?.haveSub) {
         const foundGroup = foundUser?.groups?.find(
           (group) => group?.groupName === superGroupName
         );
@@ -786,6 +787,7 @@ try {
                 ["Добавить текст для второго сообщения в группе"],
                 ["Изменения кнопок"],
                 ["Связь с разработчиком", "База знаний"],
+                ["Купить доступ"],
               ],
               resize_keyboard: true,
             },
@@ -865,6 +867,7 @@ try {
           } else {
             user.haveSub = true;
             user.testActive = true;
+            user.isTestMode = true;
             user.subDays = 3;
 
             fs.writeFileSync(
@@ -887,11 +890,22 @@ try {
 
       case "Купить доступ":
         if (type === "private") {
-          const buySubText = `${
-            user?.nick ? `@${user?.nick}` : user?.name
-          }, Реквизиты:\n\n5536914033399514\nТинькофф\n\nПосле оплаты отправьте скриншот в формате jpg, png`;
-          bot.sendMessage(chatId, buySubText);
-          bot.on("photo", handleSendReceipt);
+          if (user?.haveSub) {
+            if (user?.isTestMode) {
+              const buySubText = `${
+                user?.nick ? `@${user?.nick}` : user?.name
+              }, Реквизиты:\n\n5536914033399514\nТинькофф\nК оплате 300 рублей.\n\nПосле оплаты отправьте скриншот в формате jpg, png`;
+              bot.sendMessage(chatId, buySubText);
+              bot.on("photo", handleSendReceipt);
+            } else {
+              bot.sendMessage(
+                chatId,
+                `У вас уже есть подписка срок действия ${user.subDays} дня`
+              );
+            }
+          } else {
+            bot.sendMessage(chatId, "У вас уже есть подписка!");
+          }
         } else {
           bot.sendMessage(
             chatId,
@@ -1065,24 +1079,42 @@ try {
   cron.schedule("0 0 * * *", () => {
     const tempUsers = JSON.parse(fs.readFileSync("./assets/data/users.json"));
     tempUsers.forEach((item) => {
-      if (!item.subDays) {
-        item.haveSub = false;
-        item.subDays = null;
+      if (Number(process.env.ADMIN_CHAT_ID) !== item?.id) {
+        if (item.subDays === 3) {
+          if (!item.isTestMode) {
+            bot.sendMessage(
+              item.id,
+              "Осталось 3 дня до окончания подписка. Напишите /start что бы вернуться в меню.",
+              {
+                reply_markup: {
+                  keyboard: [["Купить доступ"]],
+                  resize_keyboard: true,
+                },
+              }
+            );
+          }
+        }
 
-        bot.sendMessage(item.id, "Ваша подписка истекла!");
-      } else {
-        item.subDays -= 1;
+        if (!item.subDays) {
+          item.haveSub = false;
+          item.subDays = null;
+
+          bot.sendMessage(item.id, "Ваша подписка истекла!");
+        } else {
+          item.subDays -= 1;
+        }
+
+        fs.writeFileSync(
+          "./assets/data/users.json",
+          JSON.stringify(tempUsers, null, "\t")
+        );
       }
-
-      fs.writeFileSync(
-        "./assets/data/users.json",
-        JSON.stringify(tempUsers, null, "\t")
-      );
     });
   });
 } catch (error) {
   console.log("Have new error! Check in logs");
   errorLogger.error(error);
 }
+
 
 bot.on("polling_error", console.log);
