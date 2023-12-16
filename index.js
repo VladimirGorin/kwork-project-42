@@ -2,7 +2,7 @@ require("dotenv").config({ path: "./assets/.env" });
 const winston = require("winston");
 const { combine, timestamp, printf } = winston.format;
 
-const TESTMODE = false;
+const TESTMODE = true;
 
 const TelegramBotApi = require("node-telegram-bot-api");
 const bot = new TelegramBotApi(
@@ -264,6 +264,7 @@ try {
               chatId,
               `Сообщение для группы ${selectedGroup} успешно установлено`
             );
+
             break;
 
           case "changeButtons":
@@ -625,6 +626,8 @@ try {
     }
 
     const command = msg.text;
+    const photo = msg?.photo;
+    const video = msg?.video;
     const chatId = msg.chat.id;
     const { type } = msg.chat;
     const { message_id } = msg;
@@ -667,7 +670,9 @@ try {
       `step: 1:name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:founderObject:${foundUser?.id}:fromObject:${msg.from.id}\n`
     );
 
-    console.log(`\n${superGroupName} ${type}, ${msg.from.is_bot}, ${foundUser}`);
+    console.log(
+      `\n${superGroupName} ${type}, ${msg.from.is_bot}, ${foundUser}`
+    );
     if (
       type === "supergroup" &&
       !msg.from.is_bot &&
@@ -711,32 +716,61 @@ try {
           const groupNoProfitButtonText = foundGroup?.buttons?.[0]?.text;
 
           bot.deleteMessage(chatId, message_id);
+          if (msg?.caption) {
+            bot
+              .sendMessage(chatId, firstGroupText, {
+                reply_markup: JSON.stringify({
+                  inline_keyboard: [
+                    [
+                      {
+                        text: groupNoProfitButtonText || "Не коммерческое",
+                        callback_data: `nonProfit`,
+                      },
+                    ],
+                    [
+                      {
+                        text: groupAdminButtonText || "Админ",
+                        callback_data: `admin`,
+                        url: groupAdminButtonURL || process.env.ADMIN_URL,
+                      },
+                    ],
+                  ],
+                }),
+              })
+              .then(({ message_id }) => {
+                setTimeout(() => {
+                  bot.deleteMessage(chatId, message_id);
+                }, 120000);
+              });
+          }
 
-          bot
-            .sendMessage(chatId, firstGroupText, {
-              reply_markup: JSON.stringify({
-                inline_keyboard: [
-                  [
-                    {
-                      text: groupNoProfitButtonText || "Не коммерческое",
-                      callback_data: `nonProfit`,
-                    },
+          if (!photo) {
+            bot
+              .sendMessage(chatId, firstGroupText, {
+                reply_markup: JSON.stringify({
+                  inline_keyboard: [
+                    [
+                      {
+                        text: groupNoProfitButtonText || "Не коммерческое",
+                        callback_data: `nonProfit`,
+                      },
+                    ],
+                    [
+                      {
+                        text: groupAdminButtonText || "Админ",
+                        callback_data: `admin`,
+                        url: groupAdminButtonURL || process.env.ADMIN_URL,
+                      },
+                    ],
                   ],
-                  [
-                    {
-                      text: groupAdminButtonText || "Админ",
-                      callback_data: `admin`,
-                      url: groupAdminButtonURL || process.env.ADMIN_URL,
-                    },
-                  ],
-                ],
-              }),
-            })
-            .then(({ message_id }) => {
-              setTimeout(() => {
-                bot.deleteMessage(chatId, message_id);
-              }, 120000);
-            });
+                }),
+              })
+              .then(({ message_id }) => {
+                setTimeout(() => {
+                  bot.deleteMessage(chatId, message_id);
+                }, 120000);
+              });
+          }
         }
       }
     }
