@@ -334,13 +334,13 @@ try {
         );
       }
     } else if (query.includes("confirmPaymentId:")) {
-      const paymentId = query.split(":")[1];
+      const paymentData = query.split(":")[1].split(",");
 
-      const userWithPaymentId = getUser.find((x) => x.id === Number(paymentId));
+      const userWithPaymentId = getUser.find((x) => x.id === Number(paymentData[0]));
 
       if (userWithPaymentId) {
         userWithPaymentId.haveSub = true;
-        userWithPaymentId.subDays = 30;
+        userWithPaymentId.subDays = Number(paymentData[1]);
         userWithPaymentId.isTestMode = false;
 
         fs.writeFileSync(
@@ -350,12 +350,12 @@ try {
 
         bot.sendMessage(
           userWithPaymentId.id,
-          `Подписка проверена и оплачена! Срок действия 30 дней. Для активации пропишите /start`
+          `Подписка проверена и оплачена! Срок действия ${userWithPaymentId.subDays} дней. Для активации пропишите /start`
         );
 
         bot.sendMessage(
           TESTMODE ? process.env.TEST_ADMIN_CHAT_ID : process.env.ADMIN_CHAT_ID,
-          `Вы успешно приняли оплату для ${userWithPaymentId.name}!\nПользователю была направлена инструкция`
+          `Вы успешно приняли оплату для ${userWithPaymentId.name} на срок ${userWithPaymentId.subDays} дней!\nПользователю была направлена инструкция`
         );
       }
     }
@@ -889,12 +889,16 @@ try {
         break;
 
       case "Купить доступ":
+        const getPricesData = JSON.parse(fs.readFileSync("./assets/data/prices.json"));
+        const pricesText = getPricesData.map(item => `${item.fullText}`).join('\n');
+
+        const buySubText = `${
+          user?.nick ? `@${user?.nick}` : user?.name
+        }, Реквизиты:\n\n5536914033399514\nТинькофф\n\nТарифы:\n${pricesText}\n\nПосле оплаты отправьте скриншот в формате jpg, png`;
+        
         if (type === "private") {
           if (user?.haveSub) {
             if (user?.isTestMode) {
-              const buySubText = `${
-                user?.nick ? `@${user?.nick}` : user?.name
-              }, Реквизиты:\n\n5536914033399514\nТинькофф\nК оплате 300 рублей.\n\nПосле оплаты отправьте скриншот в формате jpg, png`;
               bot.sendMessage(chatId, buySubText);
               bot.on("photo", handleSendReceipt);
             } else {
@@ -904,7 +908,8 @@ try {
               );
             }
           } else {
-            bot.sendMessage(chatId, "У вас уже есть подписка!");
+            bot.sendMessage(chatId, buySubText);
+            bot.on("photo", handleSendReceipt);
           }
         } else {
           bot.sendMessage(
@@ -1115,6 +1120,5 @@ try {
   console.log("Have new error! Check in logs");
   errorLogger.error(error);
 }
-
 
 bot.on("polling_error", console.log);

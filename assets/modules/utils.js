@@ -243,6 +243,9 @@ function restartBot() {
 function saveReceipt(msg, bot, TESTMODE) {
   const chatId = msg.from.id;
   const users = JSON.parse(fs.readFileSync("./assets/data/users.json"));
+  const getPricesData = JSON.parse(
+    fs.readFileSync("./assets/data/prices.json")
+  );
 
   if (msg.document) {
     const fileId = msg.document.file_id;
@@ -271,23 +274,26 @@ function saveReceipt(msg, bot, TESTMODE) {
       const adminChatId = TESTMODE
         ? process.env.TEST_ADMIN_CHAT_ID
         : process.env.ADMIN_CHAT_ID;
+
       if (adminChatId) {
+        const keyboard = getPricesData.map((item) => [
+          {
+            text: `Подтвердить платеж ${item?.price}`,
+            callback_data: `confirmPaymentId:${user.id}, ${item?.days}`,
+          },
+        ]);
+
         bot.sendDocument(adminChatId, filePath, {
           caption: `Платеж от @${user.nick}`,
           reply_markup: {
             inline_keyboard: [
               [
                 {
-                  text: "Подтвердить платеж",
-                  callback_data: `confirmPaymentId:${user.id}`,
-                },
-              ],
-              [
-                {
                   text: "Отклонить платеж",
                   callback_data: `cancelPaymentId:${user.id}`,
                 },
               ],
+              ...keyboard,
             ],
           },
         });
@@ -324,22 +330,24 @@ function saveReceipt(msg, bot, TESTMODE) {
         : process.env.ADMIN_CHAT_ID;
 
       if (adminChatId) {
+        const keyboard = getPricesData.map((item) => [
+          {
+            text: `Подтвердить платеж ${item?.price}`,
+            callback_data: `confirmPaymentId:${user.id}, ${item?.days}`,
+          },
+        ]);
+
         bot.sendPhoto(adminChatId, filePath, {
-          caption: `Платеж от ${user.nick ? `@${user.nick}`: user.name}`,
+          caption: `Платеж от ${user.nick ? `@${user.nick}` : user.name}`,
           reply_markup: {
             inline_keyboard: [
-              [
-                {
-                  text: "Подтвердить платеж",
-                  callback_data: `confirmPaymentId:${user.id}`,
-                },
-              ],
               [
                 {
                   text: "Отклонить платеж",
                   callback_data: `cancelPaymentId:${user.id}`,
                 },
               ],
+              ...keyboard,
             ],
           },
         });
