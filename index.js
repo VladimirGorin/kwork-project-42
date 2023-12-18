@@ -672,8 +672,11 @@ try {
     );
 
     console.log(
-      `\n${superGroupName} ${type}, ${msg.from.is_bot}, ${foundUser}`
+      `\n${superGroupName} ${type}, ${msg.from.is_bot}`
     );
+    console.log(foundUser)
+
+
     if (
       type === "supergroup" &&
       !msg.from.is_bot &&

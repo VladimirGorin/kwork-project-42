@@ -24,42 +24,6 @@
 		"subDays": null
 	},
 	{
-		"id": 5015947677,
-		"nick": "Vladimir003",
-		"name": "Владимир",
-		"groups": [
-			{
-				"groupName": "obiavlenianovorossiisk",
-				"ignoredUsers": [],
-				"sendedMessages": [],
-				"firstText": null,
-				"lastText": null,
-				"buttons": []
-			},
-			{
-				"groupName": "baraholkanovokuzneck",
-				"ignoredUsers": [
-					"серёжка"
-				],
-				"sendedMessages": [],
-				"firstText": null,
-				"lastText": null,
-				"buttons": []
-			},
-			{
-				"groupName": "baraholkabarnaul0",
-				"ignoredUsers": [],
-				"sendedMessages": [],
-				"firstText": null,
-				"lastText": null,
-				"buttons": []
-			}
-		],
-		"haveSub": false,
-		"subDays": null,
-		"testActive": true
-	},
-	{
 		"id": 1452185211,
 		"nick": "skupka_125",
 		"name": "Skupka125",
@@ -5045,6 +5009,14 @@
 				"firstText": null,
 				"lastText": null,
 				"buttons": []
+			},
+			{
+				"groupName": "baraholkabarnaul0",
+				"ignoredUsers": [],
+				"sendedMessages": [],
+				"firstText": null,
+				"lastText": null,
+				"buttons": []
 			}
 		],
 		"haveSub": true,
@@ -8607,6 +8579,22 @@
 						"url": "https://t.me/skupka_125"
 					}
 				]
+			},
+			{
+				"groupName": "obiavlenianovorossiisk",
+				"ignoredUsers": [],
+				"sendedMessages": [],
+				"firstText": null,
+				"lastText": null,
+				"buttons": []
+			},
+			{
+				"groupName": "baraholkanovokuzneck",
+				"ignoredUsers": [],
+				"sendedMessages": [],
+				"firstText": null,
+				"lastText": null,
+				"buttons": []
 			}
 		],
 		"haveSub": true,
@@ -38597,7 +38585,8 @@
 					"top_v1to",
 					"armanchik23",
 					"Romanova_002",
-					"Олег"
+					"Олег",
+					"Юлия ❤"
 				],
 				"sendedMessages": [],
 				"firstText": "если у Вас ➡️НЕ КОММЕРЧЕСКОЕ объявление - нажмите кнопку «Не коммерческое» и повторите публикацию.\n\n✅Если у Вас коммерческое объявление нажмите кнопку \n🔷 Админ по рекламе 🔷\n\n❗️❗️❗️За публикацию коммерческих объявлений без согласования с Администратором группы, ❌ БАН ❌",
@@ -49423,6 +49412,21 @@
 		"id": 1860856175,
 		"nick": "coworkingplace",
 		"name": "Коворкинг Place",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 5250483103,
+		"name": "Юлия ❤",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6914158110,
+		"nick": "Vvalen_tin",
+		"name": "Valentin",
 		"groups": [],
 		"haveSub": false,
 		"subDays": null
