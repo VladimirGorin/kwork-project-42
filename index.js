@@ -1090,6 +1090,13 @@ try {
       if (Number(process.env.ADMIN_CHAT_ID) !== item?.id) {
         if (item.subDays === 3) {
           if (!item.isTestMode) {
+            item.isTestMode = true
+            
+            fs.writeFileSync(
+              "./assets/data/users.json",
+              JSON.stringify(tempUsers, null, "\t")
+            );
+
             bot.sendMessage(
               item.id,
               "Осталось 3 дня до окончания подписка. Напишите /start что бы вернуться в меню.",
