@@ -241,6 +241,7 @@ function restartBot() {
 }
 
 function saveReceipt(msg, bot, TESTMODE) {
+  console.log("first 1")
   const chatId = msg.from.id;
   const users = JSON.parse(fs.readFileSync("./assets/data/users.json"));
   const getPricesData = JSON.parse(
@@ -318,8 +319,12 @@ function saveReceipt(msg, bot, TESTMODE) {
     fileStream.on("error", (error) => {
       console.error(`Error downloading file: ${error}`);
     });
-
+    console.log("first 2")
+    
     fileStream.on("finish", () => {
+
+      console.log("first 3")
+      
       bot.sendMessage(
         chatId,
         `Информация о платеже принята и направлена администратору группы\nОжидайте проверки платежа.`

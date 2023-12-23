@@ -141,6 +141,7 @@ try {
   };
 
   const handleSendReceipt = (msg) => {
+    console.log("here", msg.from.id)
     if (msg.chat.type === "private") {
       saveReceipt(msg, bot, TESTMODE);
       bot.removeListener("message", handleSendReceipt);
@@ -310,6 +311,7 @@ try {
   }
 
   function checkPaymentStatus(query) {
+    console.log(query)
     const getUser = JSON.parse(fs.readFileSync("./assets/data/users.json"));
 
     if (query.includes("cancelPaymentId:")) {
