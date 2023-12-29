@@ -855,7 +855,8 @@
 					"olgavladivostok",
 					"Lina_Limina",
 					"kukolniy_mir_vl",
-					"YarosIavT"
+					"YarosIavT",
+					"SBP_2202_2036_0961_1449"
 				],
 				"firstText": "Если у вас не Рекламное объявление нажмите кнопку «НЕ РЕКЛАМНОЕ» и опубликуйте повторно.\n\nЕсли у вас Рекламное объявление нажмите кнопку Админ.\n\nЦена рекламного поста в этой группе 150р.\nЦена рекламного поста в 9 групп по Вл 499р.\nЦена рекламного поста в 40 групп по Приморскому краю 1499р",
 				"lastText": "Публикуйте свой пост, теперь бот вас запомнил.\n\n❗️❗️❗️Если Вы опубликуете рекламное объявление не согласовав с Администратором группы, получите вечный БАН\nАдмин @Skupka_125",
@@ -3313,7 +3314,8 @@
 					"Zoro0505",
 					"Nastya45560",
 					null,
-					null
+					null,
+					"mmmopppq"
 				],
 				"firstText": "Если у вас не Рекламное объявление нажмите кнопку «НЕ РЕКЛАМНОЕ» и опубликуйте повторно.\n\nЕсли у вас Рекламное объявление нажмите кнопку Админ.\n\nЦена рекламного поста в этой группе 150р.\nЦена рекламного поста в 40 групп по Приморскому краю 1499р",
 				"lastText": "❗️❗️❗️Если Вы опубликуете рекламное объявление не согласовав с Администратором группы, получите вечный БАН",
@@ -5819,7 +5821,8 @@
 					"Saveliy5454",
 					"Bumex81",
 					"Katyaa_katerinaa",
-					"kruxx1"
+					"kruxx1",
+					"Анастасия"
 				],
 				"firstText": "Если у вас не Рекламное объявление нажмите кнопку «НЕ РЕКЛАМНОЕ» и опубликуйте повторно.\n\nЕсли у вас Рекламное объявление нажмите кнопку Админ.\n\nЦена рекламного поста в этой группе 100р.\nЦена рекламного поста в 200 групп по РФ 1499р",
 				"lastText": "❗️❗️❗️Если Вы опубликуете рекламное объявление не согласовав с Администратором группы, получите вечный БАН",
@@ -6810,6 +6813,9 @@
 					null,
 					"VORON777A",
 					null,
+					null,
+					null,
+					null,
 					null
 				],
 				"sendedMessages": [],
@@ -7083,7 +7089,8 @@
 					"Антон",
 					".",
 					null,
-					"arsen9273"
+					"arsen9273",
+					"comicallyAlair"
 				],
 				"sendedMessages": [],
 				"firstText": null,
@@ -7728,8 +7735,8 @@
 				]
 			}
 		],
-		"haveSub": false,
-		"subDays": null,
+		"haveSub": true,
+		"subDays": 365,
 		"testActive": true,
 		"isTestMode": false,
 		"selectedOptionForAllGroups": "changeButtons",
@@ -41800,6 +41807,7 @@
 					"Pivovarova282315",
 					"Vasia",
 					null,
+					null,
 					null
 				],
 				"sendedMessages": [],
@@ -41890,6 +41898,7 @@
 					null,
 					"Алексей",
 					"D_inn_aa",
+					null,
 					null,
 					null,
 					null,
@@ -96641,6 +96650,221 @@
 		"id": 6441685977,
 		"nick": "cajuputs_Pamperers",
 		"name": "Christopher",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6645072483,
+		"nick": "q12UrkOBCfiH10",
+		"name": "Юлиан",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6536032285,
+		"nick": "axGvrHsF",
+		"name": "Моисей",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6839513364,
+		"nick": "NVstdHu0n7NBDm",
+		"name": "Игнат",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6989963178,
+		"nick": "ILptLFxZqy",
+		"name": "Борис",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6055677283,
+		"nick": "Jttvlol",
+		"name": "PRTILCO",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6950209333,
+		"name": "Бодя",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6466320861,
+		"name": "Green",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6937563396,
+		"name": "Кира",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6435432831,
+		"name": "Степа",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6815148970,
+		"name": "Саша",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6682966546,
+		"name": "Aleksandr",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6984054300,
+		"name": "Таня",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6985274606,
+		"nick": "Olya_HR12",
+		"name": "Оля",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 832103105,
+		"name": "Александр Крас",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6674094560,
+		"nick": "adinecherries",
+		"name": "Lupe",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 850831399,
+		"nick": "Ilnazeey",
+		"name": "Ilnazey😎",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 1810789620,
+		"nick": "SBP_2202_2036_0961_1449",
+		"name": "ㅤ",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6120024578,
+		"name": "Лиза",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6802739117,
+		"name": "Маша",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 5895535896,
+		"nick": "mmmopppq",
+		"name": "Депутат",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6929562263,
+		"nick": "ISaska_kakaska",
+		"name": "Сашка",
+		"groups": [],
+		"haveSub": true,
+		"subDays": 3,
+		"testActive": true,
+		"isTestMode": true
+	},
+	{
+		"id": 6851802249,
+		"name": "Даня",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 5365942146,
+		"name": "Danilo",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6893754029,
+		"name": "Влад",
+		"groups": [],
+		"haveSub": false,
+		"subDays": null
+	},
+	{
+		"id": 6529433097,
+		"nick": "Plpldaster",
+		"name": "Werok",
+		"groups": [
+			{
+				"groupName": "Группа",
+				"ignoredUsers": [],
+				"sendedMessages": [],
+				"firstText": null,
+				"lastText": null,
+				"buttons": []
+			},
+			{
+				"groupName": "1",
+				"ignoredUsers": [],
+				"sendedMessages": [],
+				"firstText": null,
+				"lastText": null,
+				"buttons": []
+			}
+		],
+		"haveSub": true,
+		"subDays": 3,
+		"testActive": true,
+		"isTestMode": true
+	},
+	{
+		"id": 6683029675,
+		"name": "F",
 		"groups": [],
 		"haveSub": false,
 		"subDays": null

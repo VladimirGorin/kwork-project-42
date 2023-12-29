@@ -72,61 +72,37 @@ const saveGroups = (msg, bot) => {
   });
 };
 
-const removeGroups = (msg, bot) => {
-  const chatId = msg.from.id;
-  const users = JSON.parse(fs.readFileSync("./assets/data/users.json"));
-  const messageText = msg.text;
-
-  const extractGroupNameFromLink = (link) => {
-    const match = link.match(/https:\/\/t.me\/([^\s,]+)/);
-    return match ? match[1] : null;
-  };
-
-  const links = messageText.match(/https:\/\/t.me\/([^\s,]+)/g) || [];
-  const groupNamesFromLinks = links.map((link) =>
-    extractGroupNameFromLink(link)
+const removeGroup = (groupName, bot) => {
+  const users = JSON.parse(
+    fs.readFileSync("./assets/data/users.json")
   );
 
-  const groupNamesFromText = messageText
-    .replace(/https:\/\/t.me\/([^\s,]+)/g, "")
-    .split(",")
-    .map((groupName) => groupName.trim());
-
-  const groupNamesToRemove = [...groupNamesFromLinks, ...groupNamesFromText].filter(
-    Boolean
+  const userWithGroup = users.find((user) =>
+    user.groups.some((group) => group.groupName === groupName)
   );
 
-  groupNamesToRemove.forEach((groupName) => {
-    const user = users.find((x) => x.id === chatId);
+  if (userWithGroup) {
+    const existingGroupIndex = userWithGroup.groups.findIndex(
+      (group) => group.groupName === groupName
+    );
 
-    if (user) {
-      const existingGroupIndex = user.groups.findIndex(
-        (group) => group.groupName === groupName
+    if (existingGroupIndex !== -1) {
+      userWithGroup.groups.splice(existingGroupIndex, 1);
+
+      fs.writeFileSync(
+        "./assets/data/users.json",
+        JSON.stringify(users, null, "\t")
       );
-
-      if (existingGroupIndex !== -1) {
-        user.groups.splice(existingGroupIndex, 1);
-
-        fs.writeFileSync(
-          "./assets/data/users.json",
-          JSON.stringify(users, null, "\t")
-        );
-        bot.sendMessage(chatId, `Группа ${groupName} успешно удалена!`);
-      } else {
-        bot.sendMessage(
-          chatId,
-          `Не удалось удалить ${groupName} не найдена.`
-        );
-      }
+      bot.sendMessage(userWithGroup.id, `Группа ${groupName} успешно удалена!`);
     } else {
-      bot.sendMessage(
-        chatId,
-        "Пользователь не найден. Пожалуйста, зарегистрируйтесь или обратитесь к администратору."
-      );
+      bot.sendMessage(userWithGroup.id, `Не удалось удалить ${groupName}, не найдена.`);
     }
-  });
+  } else {
+    bot.sendMessage(
+      "Пользователь с данной группой не найден. Группа может быть уже удалена или пользователь не зарегистрирован."
+    );
+  }
 };
-
 
 function saveIgnoredUsers(msg, bot) {
   const chatId = msg.from.id;
@@ -297,7 +273,7 @@ function restartBot() {
 }
 
 function saveReceipt(msg, bot, TESTMODE) {
-  console.log("first 1")
+  console.log("first 1");
   const chatId = msg.from.id;
   const users = JSON.parse(fs.readFileSync("./assets/data/users.json"));
   const getPricesData = JSON.parse(
@@ -375,12 +351,11 @@ function saveReceipt(msg, bot, TESTMODE) {
     fileStream.on("error", (error) => {
       console.error(`Error downloading file: ${error}`);
     });
-    console.log("first 2")
-    
-    fileStream.on("finish", () => {
+    console.log("first 2");
 
-      console.log("first 3")
-      
+    fileStream.on("finish", () => {
+      console.log("first 3");
+
       bot.sendMessage(
         chatId,
         `Информация о платеже принята и направлена администратору группы\nОжидайте проверки платежа.`
@@ -427,6 +402,6 @@ module.exports = {
   saveReceipt,
   stopBot,
   saveGroups,
-  removeGroups,
+  removeGroup,
   restartBot,
 };

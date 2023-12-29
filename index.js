@@ -2,7 +2,7 @@ require("dotenv").config({ path: "./assets/.env" });
 const winston = require("winston");
 const { combine, timestamp, printf } = winston.format;
 
-const TESTMODE = false;
+const TESTMODE = true;
 
 const TelegramBotApi = require("node-telegram-bot-api");
 const bot = new TelegramBotApi(
@@ -48,7 +48,7 @@ try {
     saveNewGroupLastText,
     saveReceipt,
     saveGroups,
-    removeGroups,
+    removeGroup,
     stopBot,
     saveNewButtons,
     restartBot,
@@ -142,18 +142,19 @@ try {
     }
   };
 
-  const handleRemoveGroups = (msg) => {
-    if (msg.chat.type === "private") {
-      removeGroups(msg, bot);
-      bot.removeListener("message", handleRemoveGroups);
-    }
-  };
+  // const handleRemoveGroup = (msg) => {
+  //   if (msg.chat.type === "private") {
+  //     const users = JSON.parse(fs.readFileSync("./assets/data/users.json"));
+  //     let user = users.filter((x) => x.id === msg.from.id)[0];
+
+  //     bot.removeListener("message", handleRemoveGroup);
+  //   }
+  // };
 
   const handleSendReceipt = (msg) => {
-    console.log("here", msg);
     if (msg.chat.type === "private") {
       saveReceipt(msg, bot, TESTMODE);
-      bot.removeListener("message", handleSendReceipt);
+      bot.removeListener("photo", handleSendReceipt);
     }
   };
 
@@ -631,6 +632,15 @@ try {
           bot.sendMessage(chatId, "Ошибка при выборе группы.");
           break;
       }
+    }else if(query.includes("removeGroup:")){
+      const selectedGroup = query.split(":")[1];
+
+      const users = JSON.parse(
+        fs.readFileSync("./assets/data/users.json")
+      );
+      let user = users.filter((x) => x.id === chatId)[0];
+
+      removeGroup(selectedGroup, bot);
     }
   }
 
@@ -963,9 +973,26 @@ try {
       case "Удалить группы":
         if (type !== "supergroup") {
           if (user?.haveSub) {
-            const text = `Введите группы через запятую пример:\nГруппа1, Группа2`;
-            bot.sendMessage(chatId, text);
-            bot.on("message", handleRemoveGroups);
+
+            if(!user?.groups.length){
+              bot.sendMessage(chatId, "У вас ещё нет добавленных групп")
+              return
+            }
+
+            const removeGroupList = user?.groups?.map((item) => [
+              {
+                text: `Удалить ${item?.groupName}`,
+                callback_data: `removeGroup:${item?.groupName}`,
+              },
+            ]);
+
+            const text = `Выберете групп(у)(ы) которые хотите удалить`;
+            bot.sendMessage(chatId, text, {
+              reply_markup: JSON.stringify({
+                inline_keyboard: removeGroupList,
+              }),
+            });
+
           } else {
             bot.sendMessage(chatId, "У вас нету подписки");
           }
