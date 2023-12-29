@@ -48,6 +48,7 @@ try {
     saveNewGroupLastText,
     saveReceipt,
     saveGroups,
+    removeGroups,
     stopBot,
     saveNewButtons,
     restartBot,
@@ -102,6 +103,7 @@ try {
         ];
       })
       .filter(Boolean);
+
     if (!availableGroups.length) {
       bot.sendMessage(chatId, "У вас ещё нет добавленных групп");
       return;
@@ -112,13 +114,13 @@ try {
         bot.sendMessage(chatId, "Выберете группу", {
           reply_markup: JSON.stringify({
             inline_keyboard: [
+              ...availableGroups,
               [
                 {
                   text: "Изминить для всех групп",
                   callback_data: `changeForAll:${buttonQueryOption}`,
                 },
               ],
-              ...availableGroups,
             ],
           }),
         });
@@ -140,8 +142,15 @@ try {
     }
   };
 
+  const handleRemoveGroups = (msg) => {
+    if (msg.chat.type === "private") {
+      removeGroups(msg, bot);
+      bot.removeListener("message", handleRemoveGroups);
+    }
+  };
+
   const handleSendReceipt = (msg) => {
-    console.log("here", msg.from.id)
+    console.log("here", msg);
     if (msg.chat.type === "private") {
       saveReceipt(msg, bot, TESTMODE);
       bot.removeListener("message", handleSendReceipt);
@@ -311,7 +320,7 @@ try {
   }
 
   function checkPaymentStatus(query) {
-    console.log(query)
+    console.log(query);
     const getUser = JSON.parse(fs.readFileSync("./assets/data/users.json"));
 
     if (query.includes("cancelPaymentId:")) {
@@ -338,7 +347,9 @@ try {
     } else if (query.includes("confirmPaymentId:")) {
       const paymentData = query.split(":")[1].split(",");
 
-      const userWithPaymentId = getUser.find((x) => x.id === Number(paymentData[0]));
+      const userWithPaymentId = getUser.find(
+        (x) => x.id === Number(paymentData[0])
+      );
 
       if (userWithPaymentId) {
         userWithPaymentId.haveSub = true;
@@ -451,7 +462,7 @@ try {
       const availableGroups = user?.groups?.map((g) => [
         {
           text: g.groupName,
-          callback_data: `selectGroupForAllChanges:${g.groupName}`,
+          callback_data: `sgfac:${g.groupName}`,
         },
       ]);
 
@@ -464,20 +475,20 @@ try {
         bot.sendMessage(chatId, "Выберете группы", {
           reply_markup: JSON.stringify({
             inline_keyboard: [
+              ...availableGroups,
               [
                 {
                   text: "Применить для всех групп",
                   callback_data: `changeAll`,
                 },
               ],
-              ...availableGroups,
             ],
           }),
         });
       } else {
         bot.sendMessage(chatId, "Ошибка при отправке списка групп.");
       }
-    } else if (query.includes("selectGroupForAllChanges:")) {
+    } else if (query.includes("sgfac:")) {
       const selectedGroup = query.split(":")[1];
 
       const getUserGroups = JSON.parse(
@@ -490,7 +501,7 @@ try {
           text: user.selectedAllGroups.includes(g.groupName)
             ? `${g.groupName} ✅`
             : g.groupName,
-          callback_data: `selectGroupForAllChanges:${g.groupName}`,
+          callback_data: `sgfac:${g.groupName}`,
         },
       ]);
 
@@ -511,20 +522,20 @@ try {
             text: user.selectedAllGroups.includes(g.groupName)
               ? `${g.groupName} ✅`
               : g.groupName,
-            callback_data: `selectGroupForAllChanges:${g.groupName}`,
+            callback_data: `sgfac:${g.groupName}`,
           },
         ]);
 
         bot.sendMessage(chatId, `Группа ${checkCopy} уже выбрана`, {
           reply_markup: JSON.stringify({
             inline_keyboard: [
+              ...newAvailableGroups,
               [
                 {
                   text: "Применить для всех групп",
                   callback_data: `changeAll`,
                 },
               ],
-              ...newAvailableGroups,
             ],
           }),
         });
@@ -541,7 +552,7 @@ try {
               text: user.selectedAllGroups.includes(g.groupName)
                 ? `${g.groupName} ✅`
                 : g.groupName,
-              callback_data: `selectGroupForAllChanges:${g.groupName}`,
+              callback_data: `sgfac:${g.groupName}`,
             },
           ]);
 
@@ -551,13 +562,13 @@ try {
             {
               reply_markup: JSON.stringify({
                 inline_keyboard: [
+                  ...newAvailableGroups,
                   [
                     {
                       text: "Применить для всех групп",
                       callback_data: `changeAll`,
                     },
                   ],
-                  ...newAvailableGroups,
                 ],
               }),
             }
@@ -673,23 +684,20 @@ try {
       `step: 1:name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:founderObject:${foundUser?.id}:fromObject:${msg.from.id}\n`
     );
 
-    console.log(
-      `\n${superGroupName} ${type}, ${msg.from.is_bot}`
-    );
-    console.log(foundUser)
-
+    // console.log(`\n${superGroupName} ${type}, ${msg.from.is_bot}`);
+    // console.log(foundUser);
 
     if (
       type === "supergroup" &&
       !msg.from.is_bot &&
       foundUser?.id !== msg.from.id
     ) {
-      console.log("hrere 1");
+      // console.log("hrere 1");
       if (foundUser && foundUser?.haveSub) {
         const foundGroup = foundUser?.groups?.find(
           (group) => group?.groupName === superGroupName
         );
-        console.log("hrere 2");
+        // console.log("hrere 2");
 
         const acceptedStatus = foundGroup?.ignoredUsers?.includes(
           user?.nick || user?.name
@@ -699,11 +707,11 @@ try {
           `step: 2:name:${superGroupName}:type:${type}:isBot:${msg.from.is_bot}:acceptedStatus:${acceptedStatus}:foundGroup:${foundGroup?.groupName}\n`
         );
 
-        console.log("\n");
-        console.log(user);
-        console.log(foundGroup?.ignoredUsers, superGroupName);
-        console.log(acceptedStatus);
-        console.log("\n");
+        // console.log("\n");
+        // console.log(user);
+        // console.log(foundGroup?.ignoredUsers, superGroupName);
+        // console.log(acceptedStatus);
+        // console.log("\n");
 
         if (!acceptedStatus) {
           const defaultFirstText = `Здравствуйте, ${
@@ -787,10 +795,10 @@ try {
           bot.sendMessage(chatId, "Вы подписаны", {
             reply_markup: {
               keyboard: [
-                ["Добавить группы", "Добавить людей в игнор"],
+                ["Добавить группы", "Удалить группы"],
                 ["Добавить текст для первого сообщения в группе"],
                 ["Добавить текст для второго сообщения в группе"],
-                ["Изменения кнопок"],
+                ["Изменения кнопок", "Добавить людей в игнор"],
                 ["Связь с разработчиком", "База знаний"],
                 ["Купить доступ"],
               ],
@@ -894,13 +902,17 @@ try {
         break;
 
       case "Купить доступ":
-        const getPricesData = JSON.parse(fs.readFileSync("./assets/data/prices.json"));
-        const pricesText = getPricesData.map(item => `${item.fullText}`).join('\n');
+        const getPricesData = JSON.parse(
+          fs.readFileSync("./assets/data/prices.json")
+        );
+        const pricesText = getPricesData
+          .map((item) => `${item.fullText}`)
+          .join("\n");
 
         const buySubText = `${
           user?.nick ? `@${user?.nick}` : user?.name
         }, Реквизиты:\n\n5536914033399514\nТинькофф\n\nТарифы:\n${pricesText}\n\nПосле оплаты отправьте скриншот в формате jpg, png`;
-        
+
         if (type === "private") {
           if (user?.haveSub) {
             if (user?.isTestMode) {
@@ -933,9 +945,27 @@ try {
       case "Добавить группы":
         if (type !== "supergroup") {
           if (user?.haveSub) {
-            const text = `Введите канал, группы через запятую пример:\nГруппа1, Группа2`;
+            const text = `Введите группы через запятую пример:\nГруппа1, Группа2`;
             bot.sendMessage(chatId, text);
             bot.on("message", handleAddGroups);
+          } else {
+            bot.sendMessage(chatId, "У вас нету подписки");
+          }
+        } else {
+          bot.sendMessage(
+            chatId,
+            `Команда ${command} доступна только в лс с ботом!`
+          );
+        }
+
+        break;
+
+      case "Удалить группы":
+        if (type !== "supergroup") {
+          if (user?.haveSub) {
+            const text = `Введите группы через запятую пример:\nГруппа1, Группа2`;
+            bot.sendMessage(chatId, text);
+            bot.on("message", handleRemoveGroups);
           } else {
             bot.sendMessage(chatId, "У вас нету подписки");
           }
@@ -1092,8 +1122,8 @@ try {
       if (Number(process.env.ADMIN_CHAT_ID) !== item?.id) {
         if (item.subDays === 3) {
           if (!item.isTestMode) {
-            item.isTestMode = true
-            
+            item.isTestMode = true;
+
             fs.writeFileSync(
               "./assets/data/users.json",
               JSON.stringify(tempUsers, null, "\t")

@@ -72,6 +72,62 @@ const saveGroups = (msg, bot) => {
   });
 };
 
+const removeGroups = (msg, bot) => {
+  const chatId = msg.from.id;
+  const users = JSON.parse(fs.readFileSync("./assets/data/users.json"));
+  const messageText = msg.text;
+
+  const extractGroupNameFromLink = (link) => {
+    const match = link.match(/https:\/\/t.me\/([^\s,]+)/);
+    return match ? match[1] : null;
+  };
+
+  const links = messageText.match(/https:\/\/t.me\/([^\s,]+)/g) || [];
+  const groupNamesFromLinks = links.map((link) =>
+    extractGroupNameFromLink(link)
+  );
+
+  const groupNamesFromText = messageText
+    .replace(/https:\/\/t.me\/([^\s,]+)/g, "")
+    .split(",")
+    .map((groupName) => groupName.trim());
+
+  const groupNamesToRemove = [...groupNamesFromLinks, ...groupNamesFromText].filter(
+    Boolean
+  );
+
+  groupNamesToRemove.forEach((groupName) => {
+    const user = users.find((x) => x.id === chatId);
+
+    if (user) {
+      const existingGroupIndex = user.groups.findIndex(
+        (group) => group.groupName === groupName
+      );
+
+      if (existingGroupIndex !== -1) {
+        user.groups.splice(existingGroupIndex, 1);
+
+        fs.writeFileSync(
+          "./assets/data/users.json",
+          JSON.stringify(users, null, "\t")
+        );
+        bot.sendMessage(chatId, `Группа ${groupName} успешно удалена!`);
+      } else {
+        bot.sendMessage(
+          chatId,
+          `Не удалось удалить ${groupName} не найдена.`
+        );
+      }
+    } else {
+      bot.sendMessage(
+        chatId,
+        "Пользователь не найден. Пожалуйста, зарегистрируйтесь или обратитесь к администратору."
+      );
+    }
+  });
+};
+
+
 function saveIgnoredUsers(msg, bot) {
   const chatId = msg.from.id;
   const usersData = JSON.parse(fs.readFileSync("./assets/data/users.json"));
@@ -371,5 +427,6 @@ module.exports = {
   saveReceipt,
   stopBot,
   saveGroups,
+  removeGroups,
   restartBot,
 };

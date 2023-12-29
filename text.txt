@@ -1,0 +1,216 @@
+first 1
+first 2
+here {
+  message_id: 10294,
+  from: {
+    id: 6196334260,
+    is_bot: false,
+    first_name: 'Liza',
+    last_name: 'Mamont',
+    username: 'lizamamont44',
+    language_code: 'ru',
+    is_premium: true
+  },
+  chat: {
+    id: 6196334260,
+    first_name: 'Liza',
+    last_name: 'Mamont',
+    username: 'lizamamont44',
+    type: 'private'
+  },
+  date: 1703855841,
+  photo: [
+    {
+      file_id: 'AgACAgIAAxkBAAIoNmWOxuGDtDbkEpLDb3qSEcJO3ETjAAJD0DEbJDpxSAWIWo4AAW0MQQEAAwIAA3MAAzQE',
+      file_unique_id: 'AQADQ9AxGyQ6cUh4',
+      file_size: 1830,
+      width: 85,
+      height: 90
+    },
+    {
+      file_id: 'AgACAgIAAxkBAAIoNmWOxuGDtDbkEpLDb3qSEcJO3ETjAAJD0DEbJDpxSAWIWo4AAW0MQQEAAwIAA20AAzQE',
+      file_unique_id: 'AQADQ9AxGyQ6cUhy',
+      file_size: 22639,
+      width: 302,
+      height: 320
+    },
+    {
+      file_id: 'AgACAgIAAxkBAAIoNmWOxuGDtDbkEpLDb3qSEcJO3ETjAAJD0DEbJDpxSAWIWo4AAW0MQQEAAwIAA3gAAzQE',
+      file_unique_id: 'AQADQ9AxGyQ6cUh9',
+      file_size: 101169,
+      width: 756,
+      height: 800
+    },
+    {
+      file_id: 'AgACAgIAAxkBAAIoNmWOxuGDtDbkEpLDb3qSEcJO3ETjAAJD0DEbJDpxSAWIWo4AAW0MQQEAAwIAA3kAAzQE',
+      file_unique_id: 'AQADQ9AxGyQ6cUh-',
+      file_size: 213479,
+      width: 1209,
+      height: 1280
+    }
+  ]
+}
+first 1
+first 2
+first 3
+first 3
+confirmPaymentId:6196334260, 365
+here {
+  message_id: 10305,
+  from: {
+    id: 6196334260,
+    is_bot: false,
+    first_name: 'Liza',
+    last_name: 'Mamont',
+    username: 'lizamamont44',
+    language_code: 'ru',
+    is_premium: true
+  },
+  chat: {
+    id: 6196334260,
+    first_name: 'Liza',
+    last_name: 'Mamont',
+    username: 'lizamamont44',
+    type: 'private'
+  },
+  date: 1703855915,
+  photo: [
+    {
+      file_id: 'AgACAgIAAxkBAAIoQWWOxyvXgtK2dJeXKN2b5xaUIMAfAAJD0DEbJDpxSAWIWo4AAW0MQQEAAwIAA3MAAzQE',
+      file_unique_id: 'AQADQ9AxGyQ6cUh4',
+      file_size: 1830,
+      width: 85,
+      height: 90
+    },
+    {
+      file_id: 'AgACAgIAAxkBAAIoQWWOxyvXgtK2dJeXKN2b5xaUIMAfAAJD0DEbJDpxSAWIWo4AAW0MQQEAAwIAA20AAzQE',
+      file_unique_id: 'AQADQ9AxGyQ6cUhy',
+      file_size: 22639,
+      width: 302,
+      height: 320
+    },
+    {
+      file_id: 'AgACAgIAAxkBAAIoQWWOxyvXgtK2dJeXKN2b5xaUIMAfAAJD0DEbJDpxSAWIWo4AAW0MQQEAAwIAA3gAAzQE',
+      file_unique_id: 'AQADQ9AxGyQ6cUh9',
+      file_size: 101169,
+      width: 756,
+      height: 800
+    },
+    {
+      file_id: 'AgACAgIAAxkBAAIoQWWOxyvXgtK2dJeXKN2b5xaUIMAfAAJD0DEbJDpxSAWIWo4AAW0MQQEAAwIAA3kAAzQE',
+      file_unique_id: 'AQADQ9AxGyQ6cUh-',
+      file_size: 213479,
+      width: 1209,
+      height: 1280
+    }
+  ]
+}
+first 1
+first 2
+here {
+  message_id: 10305,
+  from: {
+    id: 6196334260,
+    is_bot: false,
+    first_name: 'Liza',
+    last_name: 'Mamont',
+    username: 'lizamamont44',
+    language_code: 'ru',
+    is_premium: true
+  },
+  chat: {
+    id: 6196334260,
+    first_name: 'Liza',
+    last_name: 'Mamont',
+    username: 'lizamamont44',
+    type: 'private'
+  },
+  date: 1703855915,
+  photo: [
+    {
+      file_id: 'AgACAgIAAxkBAAIoQWWOxyvXgtK2dJeXKN2b5xaUIMAfAAJD0DEbJDpxSAWIWo4AAW0MQQEAAwIAA3MAAzQE',
+      file_unique_id: 'AQADQ9AxGyQ6cUh4',
+      file_size: 1830,
+      width: 85,
+      height: 90
+    },
+    {
+      file_id: 'AgACAgIAAxkBAAIoQWWOxyvXgtK2dJeXKN2b5xaUIMAfAAJD0DEbJDpxSAWIWo4AAW0MQQEAAwIAA20AAzQE',
+      file_unique_id: 'AQADQ9AxGyQ6cUhy',
+      file_size: 22639,
+      width: 302,
+      height: 320
+    },
+    {
+      file_id: 'AgACAgIAAxkBAAIoQWWOxyvXgtK2dJeXKN2b5xaUIMAfAAJD0DEbJDpxSAWIWo4AAW0MQQEAAwIAA3gAAzQE',
+      file_unique_id: 'AQADQ9AxGyQ6cUh9',
+      file_size: 101169,
+      width: 756,
+      height: 800
+    },
+    {
+      file_id: 'AgACAgIAAxkBAAIoQWWOxyvXgtK2dJeXKN2b5xaUIMAfAAJD0DEbJDpxSAWIWo4AAW0MQQEAAwIAA3kAAzQE',
+      file_unique_id: 'AQADQ9AxGyQ6cUh-',
+      file_size: 213479,
+      width: 1209,
+      height: 1280
+    }
+  ]
+}
+first 1
+first 2
+here {
+  message_id: 10305,
+  from: {
+    id: 6196334260,
+    is_bot: false,
+    first_name: 'Liza',
+    last_name: 'Mamont',
+    username: 'lizamamont44',
+    language_code: 'ru',
+    is_premium: true
+  },
+  chat: {
+    id: 6196334260,
+    first_name: 'Liza',
+    last_name: 'Mamont',
+    username: 'lizamamont44',
+    type: 'private'
+  },
+  date: 1703855915,
+  photo: [
+    {
+      file_id: 'AgACAgIAAxkBAAIoQWWOxyvXgtK2dJeXKN2b5xaUIMAfAAJD0DEbJDpxSAWIWo4AAW0MQQEAAwIAA3MAAzQE',
+      file_unique_id: 'AQADQ9AxGyQ6cUh4',
+      file_size: 1830,
+      width: 85,
+      height: 90
+    },
+    {
+      file_id: 'AgACAgIAAxkBAAIoQWWOxyvXgtK2dJeXKN2b5xaUIMAfAAJD0DEbJDpxSAWIWo4AAW0MQQEAAwIAA20AAzQE',
+      file_unique_id: 'AQADQ9AxGyQ6cUhy',
+      file_size: 22639,
+      width: 302,
+      height: 320
+    },
+    {
+      file_id: 'AgACAgIAAxkBAAIoQWWOxyvXgtK2dJeXKN2b5xaUIMAfAAJD0DEbJDpxSAWIWo4AAW0MQQEAAwIAA3gAAzQE',
+      file_unique_id: 'AQADQ9AxGyQ6cUh9',
+      file_size: 101169,
+      width: 756,
+      height: 800
+    },
+    {
+      file_id: 'AgACAgIAAxkBAAIoQWWOxyvXgtK2dJeXKN2b5xaUIMAfAAJD0DEbJDpxSAWIWo4AAW0MQQEAAwIAA3kAAzQE',
+      file_unique_id: 'AQADQ9AxGyQ6cUh-',
+      file_size: 213479,
+      width: 1209,
+      height: 1280
+    }
+  ]
+}
+first 1
+first 2
+first 3
+first 3
+first 3
